@@ -642,125 +642,125 @@ const InterviewSimulation = ({ onEnd }) => {
   }
 
   // Video Call Interface - Enhanced with Real Camera
-  return (
-    <div className="fixed inset-0 h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex flex-col overflow-hidden z-50 pt-0">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center flex-shrink-0">
-        <div className="flex items-center space-x-4">
-          <h1 className="text-gray-800 font-medium">AI Interview Simulation</h1>
-          <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
-            Question {questionCount}
-          </span>
-          {/* Speaking Timer */}
-          <div className="flex items-center space-x-2">
-            <Clock className="w-4 h-4 text-gray-500" />
-            <span className="text-gray-600 text-sm">
-              Speaking: {formatTime(speakingDuration)} / Total: {formatTime(totalSpeakingTime)}
-            </span>
-          </div>
-        </div>
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => setShowChat(!showChat)}
-            className="p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <MessageCircle className="w-5 h-5" />
-          </button>
-          <button 
-            onClick={toggleCamera}
-            className="p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <Camera className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-
-      {/* Main Video Area */}
-      <div className="flex-1 flex min-h-0">
-        {/* Video Grid */}
-        <div className="flex-1 p-4 overflow-auto">
-          <div className="grid grid-cols-2 gap-4 h-full max-h-[400px]">
-            {/* AI Interviewer */}
-            <div className="relative bg-white border border-gray-200 rounded-xl overflow-hidden shadow-lg">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className={`w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 ${isSpeaking ? 'ring-4 ring-green-400 animate-pulse' : ''}`}>
-                    <span className="text-2xl font-bold text-white">AI</span>
-                  </div>
-                  <h3 className="text-gray-800 font-medium">AI Interviewer</h3>
-                  <p className="text-gray-500 text-sm mt-1">
-                    {isSpeaking ? 'Speaking...' : 'Listening'}
-                  </p>
-                </div>
-              </div>
-              <div className="absolute bottom-4 left-4">
-                <span className="bg-black bg-opacity-75 text-white px-2 py-1 rounded text-sm">
-                  AI Interviewer
+return (
+    <div className="fixed inset-0 h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex flex-col overflow-hidden z-50 pt-16">
+        {/* Header */}
+        <div className="bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center flex-shrink-0">
+            <div className="flex items-center space-x-4">
+                <h1 className="text-gray-800 font-medium">AI Interview Simulation</h1>
+                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
+                    Question {questionCount}
                 </span>
-              </div>
+                {/* Speaking Timer */}
+                <div className="flex items-center space-x-2">
+                    <Clock className="w-4 h-4 text-gray-500" />
+                    <span className="text-gray-600 text-sm">
+                        Speaking: {formatTime(speakingDuration)} / Total: {formatTime(totalSpeakingTime)}
+                    </span>
+                </div>
             </div>
+            <div className="flex items-center space-x-2">
+                <button
+                    onClick={() => setShowChat(!showChat)}
+                    className="p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                    <MessageCircle className="w-5 h-5" />
+                </button>
+                <button 
+                    onClick={toggleCamera}
+                    className="p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                    <Camera className="w-5 h-5" />
+                </button>
+            </div>
+        </div>
 
-            {/* User - Real Camera Feed */}
-            <div className="relative bg-white border border-gray-200 rounded-xl overflow-hidden shadow-lg">
-              {cameraEnabled && videoEnabled && cameraStream && !cameraError ? (
-                <>
-                  <video
-                    ref={userVideoRef}
-                    autoPlay
-                    muted
-                    playsInline
-                    className="w-full h-full object-cover"
-                    style={{ transform: 'scaleX(-1)' }}
-                    onLoadedMetadata={() => {
-                      if (userVideoRef.current) {
-                        userVideoRef.current.play().catch(err => {
-                          console.error('Video play failed:', err);
-                        });
-                      }
-                    }}
-                    onError={(e) => {
-                      console.error('Video error:', e);
-                      setCameraError('Video playback failed');
-                    }}
-                  />
-                  {/* Overlay indicators */}
-                  <div className="absolute inset-0">
-                    {isListening && (
-                      <div className="absolute inset-0 ring-4 ring-red-400 animate-pulse rounded-xl"></div>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    {cameraError ? (
-                      <>
-                        <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-gray-600 font-medium mb-2">Camera Unavailable</h3>
-                        <p className="text-gray-500 text-sm px-4">{cameraError}</p>
-                        <button
-                          onClick={() => {
-                            setCameraError('');
-                            startCamera();
-                          }}
-                          className="mt-3 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded"
-                        >
-                          Retry Camera
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <div className={`w-24 h-24 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 ${isListening ? 'ring-4 ring-red-400 animate-pulse' : ''}`}>
-                          <span className="text-2xl font-bold text-white">ME</span>
+        {/* Main Video Area */}
+        <div className="flex-1 flex min-h-0">
+            {/* Video Grid */}
+            <div className="flex-1 p-4 overflow-auto">
+                <div className="grid grid-cols-2 gap-4 h-full max-h-[400px]">
+                    {/* AI Interviewer */}
+                    <div className="relative bg-white border border-gray-200 rounded-xl overflow-hidden shadow-lg">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="text-center">
+                                <div className={`w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 ${isSpeaking ? 'ring-4 ring-green-400 animate-pulse' : ''}`}>
+                                    <span className="text-2xl font-bold text-white">AI</span>
+                                </div>
+                                <h3 className="text-gray-800 font-medium">AI Interviewer</h3>
+                                <p className="text-gray-500 text-sm mt-1">
+                                    {isSpeaking ? 'Speaking...' : 'Listening'}
+                                </p>
+                            </div>
                         </div>
-                        <h3 className="text-gray-800 font-medium">You</h3>
-                        <p className="text-gray-500 text-sm mt-1">
-                          {isListening ? `Speaking... ${formatTime(speakingDuration)}` : 'Ready'}
-                        </p>
-                        {!videoEnabled && (
-                          <p className="text-gray-400 text-xs mt-2">Camera Off</p>
-                        )}
-                      </>
+                        <div className="absolute bottom-4 left-4">
+                            <span className="bg-black bg-opacity-75 text-white px-2 py-1 rounded text-sm">
+                                AI Interviewer
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* User - Real Camera Feed */}
+                    <div className="relative bg-white border border-gray-200 rounded-xl overflow-hidden shadow-lg">
+                        {cameraEnabled && videoEnabled && cameraStream && !cameraError ? (
+                            <>
+                                <video
+                                    ref={userVideoRef}
+                                    autoPlay
+                                    muted
+                                    playsInline
+                                    className="w-full h-full object-cover"
+                                    style={{ transform: 'scaleX(-1)' }}
+                                    onLoadedMetadata={() => {
+                                        if (userVideoRef.current) {
+                                            userVideoRef.current.play().catch(err => {
+                                                console.error('Video play failed:', err);
+                                            });
+                                        }
+                                    }}
+                                    onError={(e) => {
+                                        console.error('Video error:', e);
+                                        setCameraError('Video playback failed');
+                                    }}
+                                />
+                                {/* Overlay indicators */}
+                                <div className="absolute inset-0">
+                                    {isListening && (
+                                        <div className="absolute inset-0 ring-4 ring-red-400 animate-pulse rounded-xl"></div>
+                                    )}
+                                </div>
+                            </>
+                        ) : (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="text-center">
+                                    {cameraError ? (
+                        <>
+                            <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                            <h3 className="text-gray-600 font-medium mb-2">Camera Unavailable</h3>
+                            <p className="text-gray-500 text-sm px-4">{cameraError}</p>
+                            <button
+                                onClick={() => {
+                                    setCameraError('');
+                                    startCamera();
+                                }}
+                                className="mt-3 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded"
+                            >
+                                Retry Camera
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <div className={`w-24 h-24 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 ${isListening ? 'ring-4 ring-red-400 animate-pulse' : ''}`}>
+                                <span className="text-2xl font-bold text-white">ME</span>
+                            </div>
+                            <h3 className="text-gray-800 font-medium">You</h3>
+                            <p className="text-gray-500 text-sm mt-1">
+                                {isListening ? `Speaking... ${formatTime(speakingDuration)}` : 'Ready'}
+                            </p>
+                            {!videoEnabled && (
+                                <p className="text-gray-400 text-xs mt-2">Camera Off</p>
+                            )}
+                        </>
                     )}
                   </div>
                 </div>

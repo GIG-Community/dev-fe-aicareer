@@ -6,6 +6,7 @@ import AimprovePage from './pages/aimprove/page';
 import AinterviewPage from './pages/ainterview/page';
 import AitestPage from './pages/aitest/page';
 import AiworkPage from './pages/aiwork/page';
+import AiprojectPage from './pages/aiproject/page';
 import InterviewSimulation from './pages/ainterview/interview-simulation/page';
 
 export const router = createBrowserRouter([
@@ -36,6 +37,10 @@ export const router = createBrowserRouter([
       {
         path: '/ainterview/interview-simulation',
         element: createElement(InterviewSimulation)
+      },
+      {
+        path: '/aiproject',
+        element: createElement(AiprojectPage)
       }
     ]
   }

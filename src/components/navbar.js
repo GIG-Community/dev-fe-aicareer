@@ -1,4 +1,4 @@
-import { BrainCircuit, Globe2, BookOpenCheck, RocketIcon, Menu, X, Sparkles } from "lucide-react";
+import { BrainCircuit, Globe2, BookOpenCheck, RocketIcon, Menu, X, Sparkles, ReceiptText } from "lucide-react";
 import { useState, createElement } from "react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -8,6 +8,7 @@ export default function Navbar() {
 
   const navItems = [
     { name: "Aimprove", icon: RocketIcon, href: "/aimprove" },
+    { name: "Aiproject", icon: ReceiptText, href: "/aiproject" },
     { name: "Ainterview", icon: Globe2, href: "/ainterview" },
     { name: "Aitest", icon: BookOpenCheck, href: "/aitest" },
     { name: "Aiwork", icon: BrainCircuit, href: "/aiwork" },
