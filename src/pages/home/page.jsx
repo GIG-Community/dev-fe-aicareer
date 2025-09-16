@@ -185,6 +185,77 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Pricing Section */}
+      <section className="relative py-20 lg:py-32">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-4xl mx-auto mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-8">
+              <span className="bg-gradient-to-b from-slate-800 via-blue-800 to-slate-700 bg-clip-text text-transparent">
+                Harga Terjangkau
+              </span>
+            </h2>
+            <p className="text-lg text-slate-600 leading-relaxed">
+              Akses semua fitur premium dengan harga yang sangat terjangkau
+            </p>
+          </div>
+
+          <div className="max-w-md mx-auto">
+            <div className="bg-white border-2 border-blue-300/50 rounded-3xl p-8 text-center relative overflow-hidden">
+              {/* Popular badge */}
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-2 rounded-full text-sm font-medium">
+                  Paling Populer
+                </div>
+              </div>
+              
+              <div className="mt-6">
+                <h3 className="text-2xl font-bold text-slate-800 mb-2">Premium Access</h3>
+                <p className="text-slate-600 mb-6">Akses semua fitur AI Career</p>
+                
+                {/* Price */}
+                <div className="mb-8">
+                  <span className="text-5xl font-bold text-slate-800">24.900</span>
+                  <span className="text-lg text-slate-600 ml-1">/ bulan</span>
+                </div>
+                
+                {/* Features */}
+                <div className="space-y-4 mb-8 text-left">
+                  {[
+                    "Akses ke semua 5 layanan AI",
+                    "Simulasi kerja unlimited",
+                    "Tes teknis dan soft skill",
+                    "Interview practice dengan AI",
+                    "Jalur karir personal",
+                    "Pengembangan portfolio",
+                    "Analisis mendalam & rekomendasi",
+                    "Dukungan 24/7"
+                  ].map((feature, index) => (
+                    <div key={index} className="flex items-center">
+                      <CheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
+                      <span className="text-slate-600">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* CTA Button */}
+                <button className="group relative w-full px-8 py-4 rounded-2xl text-lg font-medium transition-all duration-500 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+                  <div className="relative z-10 flex items-center justify-center text-white">
+                    <span>Mulai Berlangganan</span>
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                  </div>
+                </button>
+                
+                <p className="text-sm text-slate-500 mt-4">
+                  *Gratis trial 7 hari, batalkan kapan saja
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
       
       {/* CTA Section */}
       <section className="relative py-20 lg:py-32">
