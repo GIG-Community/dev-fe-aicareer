@@ -102,26 +102,29 @@ export default function HomePage() {
               <span className="text-blue-700 font-semibold"> Pengembangan Portfolio</span>
             </p>
             
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-              <button className="group relative px-8 py-4 rounded-2xl text-lg font-medium w-full sm:w-auto transition-all duration-500 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl"></div>
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
-                <div className="relative z-10 flex items-center justify-center text-white">
-                  <span>Mulai Gratis Sekarang</span>
-                  <RocketIcon className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
-                </div>
-              </button>
-              <button className="bg-white/80 border border-blue-200/50 px-8 py-4 rounded-2xl text-lg font-medium w-full sm:w-auto transition-all duration-300 text-slate-700 hover:bg-white">
-                Lihat Demo
-              </button>
-            </div>
+          
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+                    <button 
+                    onClick={() => window.location.href = '/login'}
+                    className="group relative px-8 py-4 rounded-2xl text-lg font-medium w-full sm:w-auto transition-all duration-500 overflow-hidden"
+                    >
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+                    <div className="relative z-10 flex items-center justify-center text-white">
+                      <span>Mulai Gratis Sekarang</span>
+                      <RocketIcon className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                    </div>
+                    </button>
+                    <button className="bg-white/80 border border-blue-200/50 px-8 py-4 rounded-2xl text-lg font-medium w-full sm:w-auto transition-all duration-300 text-slate-700 hover:bg-white">
+                    Lihat Demo
+                    </button>
+                  </div>
 
-           
-          </div>
+                   
+                  </div>
 
-          {/* Hero Stats */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-20 max-w-4xl mx-auto">
+                  {/* Hero Stats */}
+          {/* <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-20 max-w-4xl mx-auto">
             {[
               { number: "10K+", label: "Pengguna Aktif" },
               { number: "95%", label: "Tingkat Sukses" },
@@ -133,7 +136,7 @@ export default function HomePage() {
                 <div className="text-slate-500 text-sm">{stat.label}</div>
               </div>
             ))}
-          </div>
+          </div> */}
         </div>
       </section>
 
@@ -366,64 +369,60 @@ export default function HomePage() {
                     </div>
                   ))}
                 </div>
-                
-                {/* CTA Button */}
-                <button 
-                  onClick={handlePayment}
-                  disabled={isProcessingPayment}
-                  className="group relative w-full px-8 py-4 rounded-2xl text-lg font-medium transition-all duration-500 overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl"></div>
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
-                  <div className="relative z-10 flex items-center justify-center text-white">
-                    <span>{isProcessingPayment ? 'Memproses...' : 'Mulai Berlangganan'}</span>
-                    {!isProcessingPayment && (
-                      <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
-                    )}
-                  </div>
-                </button>
-                
-                <p className="text-sm text-slate-500 mt-4">
-                  *Gratis trial 7 hari, batalkan kapan saja
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="relative py-20 lg:py-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white/80 border border-blue-200/50 rounded-3xl p-8 md:p-12 lg:p-16 text-center">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-8">
-              <span className="bg-gradient-to-b from-slate-800 via-blue-800 to-slate-700 bg-clip-text text-transparent">
-                Siap Mengakselerasi<br />Karir Digital Anda?
-              </span>
-            </h2>
             
-            <p className="text-lg md:text-xl text-slate-600 leading-relaxed max-w-3xl mx-auto mb-12">
-              Bergabunglah dengan ribuan profesional yang telah menggunakan Aicareer untuk mencapai karir impian mereka
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <button className="group relative px-8 py-4 rounded-2xl text-lg font-medium w-full sm:w-auto transition-all duration-500 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl"></div>
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
-                <div className="relative z-10 flex items-center justify-center text-white">
-                  <span>Mulai Gratis Sekarang</span>
-                  <Sparkles className="w-5 h-5 ml-2 group-hover:rotate-12 transition-transform duration-300" />
-                </div>
-              </button>
-              <button className="bg-white border border-blue-200/50 px-8 py-4 rounded-2xl text-lg font-medium w-full sm:w-auto transition-all duration-300 text-slate-700 hover:bg-slate-50">
-                Lihat Demo
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
+                        <button 
+                          onClick={() => window.location.href = '/login'}
+                          className="group relative w-full px-8 py-4 rounded-2xl text-lg font-medium transition-all duration-500 overflow-hidden"
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl"></div>
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+                          <div className="relative z-10 flex items-center justify-center text-white">
+                          <span>Mulai Berlangganan</span>
+                          <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                          </div>
+                        </button>
+                        
+                        
+                        </div>
+                      </div>
+                      </div>
+                    </div>
+                    </section>
 
-      {/* Footer */}
+                      <section className="relative py-20 lg:py-32">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                          <div className="bg-white/80 border border-blue-200/50 rounded-3xl p-8 md:p-12 lg:p-16 text-center">
+                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-8">
+                          <span className="bg-gradient-to-b from-slate-800 via-blue-800 to-slate-700 bg-clip-text text-transparent">
+                            Siap Mengakselerasi<br />Karir Digital Anda?
+                          </span>
+                        </h2>
+                        
+                        <p className="text-lg md:text-xl text-slate-600 leading-relaxed max-w-3xl mx-auto mb-12">
+                          Bergabunglah dengan ribuan profesional yang telah menggunakan Aicareer untuk mencapai karir impian mereka
+                        </p>
+                        
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                          <button 
+                            onClick={() => window.location.href = '/login'}
+                            className="group relative px-8 py-4 rounded-2xl text-lg font-medium w-full sm:w-auto transition-all duration-500 overflow-hidden"
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl"></div>
+                            <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+                            <div className="relative z-10 flex items-center justify-center text-white">
+                          <span>Mulai Gratis Sekarang</span>
+                          <Sparkles className="w-5 h-5 ml-2 group-hover:rotate-12 transition-transform duration-300" />
+                            </div>
+                          </button>
+                          <button className="bg-white border border-blue-200/50 px-8 py-4 rounded-2xl text-lg font-medium w-full sm:w-auto transition-all duration-300 text-slate-700 hover:bg-slate-50">
+                            Lihat Demo
+                          </button>
+                        </div>
+                          </div>
+                        </div>
+                      </section>
+
+                      {/* Footer */}
       <Footer />
     </div>
   );
