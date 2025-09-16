@@ -1,9 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrainCircuit, Users, Clock, Target, ChevronRight, Play, Code, Kanban } from 'lucide-react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../../lib/firebase';
+import { useNavigate } from 'react-router-dom';
+import LayoutWrapper from '../../components/layout/LayoutWrapper';
 import WorkSimulation from './work-simulation/page';
 
-export default function AiworkPage() {
+function AiworkContent() {
   const [activeSimulation, setActiveSimulation] = useState(null);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const jobSimulations = [
     {
@@ -58,6 +71,14 @@ export default function AiworkPage() {
     }
   ];
 
+  const handleStartSimulation = (simulationId) => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    setActiveSimulation(simulationId);
+  };
+
   if (activeSimulation) {
     return (
       <WorkSimulation 
@@ -68,7 +89,7 @@ export default function AiworkPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pt-28">
+    <div className={`min-h-screen ${user ? 'p-8' : 'bg-gradient-to-br from-blue-50 to-indigo-100 pt-28'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-6">
@@ -77,12 +98,19 @@ export default function AiworkPage() {
               Aiwork - Professional Edition
             </h1>
           </div>
-          <p className="text-xl text-slate-600 mb-4 ">
+          <p className="text-xl text-slate-600 mb-4">
             Experience authentic professional work scenarios with real tools and workflows
           </p>
           <p className="text-slate-500 max-w-2xl mx-auto">
             Simulate real work environments with live coding interfaces, project management boards, and collaborative team dynamics
           </p>
+          {!user && (
+            <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+              <p className="text-blue-700">
+                <strong>Login required:</strong> Please log in to access AI Work simulations and track your professional experience.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Feature Highlights */}
@@ -182,11 +210,11 @@ export default function AiworkPage() {
                   </div>
                   
                   <button
-                    onClick={() => setActiveSimulation(simulation.id)}
+                    onClick={() => handleStartSimulation(simulation.id)}
                     className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-4 px-4 rounded-lg font-medium transition-all duration-200 flex items-center justify-center group"
                   >
                     <Play className="w-5 h-5 mr-2 group-hover:translate-x-1 transition-transform" />
-                    Start Professional Simulation
+                    {user ? 'Start Professional Simulation' : 'Login to Start Simulation'}
                   </button>
                 </div>
               </div>
@@ -280,5 +308,13 @@ export default function AiworkPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AiworkPage() {
+  return (
+    <LayoutWrapper>
+      <AiworkContent />
+    </LayoutWrapper>
   );
 }

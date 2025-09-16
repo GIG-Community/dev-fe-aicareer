@@ -8,7 +8,7 @@ export default function App() {
   return (
     <div className="min-h-screen w-full relative overflow-hidden bg-slate-50 text-slate-800 font-['Poppins']">
       {/* Navbar */}
-      <Navbar />
+      {/* <Navbar /> */}
 
       {/* Enhanced Background Elements */}
       <div className="fixed inset-0 -z-10">
@@ -55,7 +55,7 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

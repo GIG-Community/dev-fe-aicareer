@@ -1,8 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { RocketIcon, BookOpen, Briefcase, Trophy, Star, Lock, CheckCircle, Clock, Flame, FileText, Brain, Heart, Target, MapPin, Building, DollarSign, TrendingUp, Lightbulb, Users, Award, Calendar } from 'lucide-react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../../lib/firebase';
+import LayoutWrapper from '../../components/layout/LayoutWrapper';
 
-export default function AimprovePage() {
+function AimproveContent() {
   const [selectedPath, setSelectedPath] = useState('design');
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const jobRoles = [
     // Technology/IT
@@ -656,7 +667,7 @@ export default function AimprovePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pt-32">
+    <div className="p-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
@@ -669,6 +680,13 @@ export default function AimprovePage() {
           <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto">
             Follow structured learning paths to master skills and advance your career with gamified experiences.
           </p>
+          {!user && (
+            <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+              <p className="text-blue-700">
+                <strong>Login required:</strong> Please log in to access AI Improve features and track your progress.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Career Path Selection */}
@@ -777,5 +795,13 @@ export default function AimprovePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AimprovePage() {
+  return (
+    <LayoutWrapper>
+      <AimproveContent />
+    </LayoutWrapper>
   );
 }

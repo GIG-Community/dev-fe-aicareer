@@ -1,13 +1,72 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { BrainCircuit, Globe2, BookOpenCheck, RocketIcon, Sparkles, Target, Users, TrendingUp, CheckCircle, ArrowRight, Star, Zap, Shield, Award } from "lucide-react";
+import Navbar from '../../components/navbar';
+import Footer from '../../components/footer';
 import '../../App.css'
-
+import { validateDiscountCode, getPriceByDiscountCode, handleSafePaymentFlowWithDiscount } from '../../services/paymentService';
 
 export default function HomePage() {
+  const [discountCode, setDiscountCode] = useState('');
+  const [appliedDiscount, setAppliedDiscount] = useState(null);
+  const [showDiscountForm, setShowDiscountForm] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+
+  const handleApplyDiscount = () => {
+    if (validateDiscountCode(discountCode)) {
+      const priceInfo = getPriceByDiscountCode(discountCode);
+      setAppliedDiscount(priceInfo);
+      alert(`Kode diskon berhasil diterapkan! Hemat Rp ${priceInfo.discount.toLocaleString()}`);
+    } else {
+      alert('Kode diskon tidak valid');
+      setAppliedDiscount(null);
+    }
+  };
+
+  const handleRemoveDiscount = () => {
+    setDiscountCode('');
+    setAppliedDiscount(null);
+  };
+
+  const handlePayment = async () => {
+    if (isProcessingPayment) return;
+    
+    setIsProcessingPayment(true);
+    
+    try {
+      const orderData = {
+        customerName: 'User', // In real app, get from auth
+        customerEmail: 'user@email.com', // In real app, get from auth
+        customerPhone: '08123456789', // In real app, get from form
+        itemName: 'AI Career Premium Plan - Monthly',
+        amount: appliedDiscount ? appliedDiscount.price : 24900
+      };
+
+      await handleSafePaymentFlowWithDiscount(
+        orderData,
+        appliedDiscount ? discountCode : null,
+        {
+          onSuccess: (result) => {
+            console.log('Payment initiated:', result);
+          },
+          onError: (error) => {
+            console.error('Payment error:', error);
+            alert('Terjadi kesalahan saat memproses pembayaran');
+          }
+        }
+      );
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('Terjadi kesalahan saat memproses pembayaran');
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full relative overflow-hidden bg-slate-50 text-slate-800 font-['Poppins']">
-
+      {/* Navbar */}
+      <Navbar />
 
       {/* Simplified Background */}
       <div className="fixed inset-0 -z-10">
@@ -213,10 +272,80 @@ export default function HomePage() {
                 <h3 className="text-2xl font-bold text-slate-800 mb-2">Premium Access</h3>
                 <p className="text-slate-600 mb-6">Akses semua fitur AI Career</p>
                 
+                {/* Discount Form */}
+                <div className="mb-6">
+                  {!showDiscountForm && !appliedDiscount && (
+                    <button 
+                      onClick={() => setShowDiscountForm(true)}
+                      className="text-blue-600 text-sm font-medium hover:text-blue-700 transition-colors"
+                    >
+                      Punya kode diskon?
+                    </button>
+                  )}
+                  
+                  {showDiscountForm && !appliedDiscount && (
+                    <div className="space-y-3">
+                      <input
+                        type="text"
+                        placeholder="Masukkan kode diskon"
+                        value={discountCode}
+                        onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleApplyDiscount}
+                          disabled={!discountCode}
+                          className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
+                        >
+                          Terapkan
+                        </button>
+                        <button
+                          onClick={() => setShowDiscountForm(false)}
+                          className="flex-1 bg-gray-100 text-gray-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                        >
+                          Batal
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {appliedDiscount && (
+                    <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-green-700 font-medium text-sm">Kode diskon aktif!</p>
+                          <p className="text-green-600 text-xs">Hemat Rp {appliedDiscount.discount.toLocaleString()}</p>
+                        </div>
+                        <button
+                          onClick={handleRemoveDiscount}
+                          className="text-green-600 hover:text-green-700 text-sm font-medium"
+                        >
+                          Hapus
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
                 {/* Price */}
                 <div className="mb-8">
-                  <span className="text-5xl font-bold text-slate-800">24.900</span>
+                  {appliedDiscount && (
+                    <div className="text-center mb-2">
+                      <span className="text-2xl text-gray-400 line-through">
+                        {appliedDiscount.originalPrice.toLocaleString()}
+                      </span>
+                    </div>
+                  )}
+                  <span className="text-5xl font-bold text-slate-800">
+                    {appliedDiscount ? appliedDiscount.price.toLocaleString() : '24.900'}
+                  </span>
                   <span className="text-lg text-slate-600 ml-1">/ bulan</span>
+                  {appliedDiscount && (
+                    <div className="text-green-600 font-medium text-sm mt-1">
+                      Hemat Rp {appliedDiscount.discount.toLocaleString()}!
+                    </div>
+                  )}
                 </div>
                 
                 {/* Features */}
@@ -239,12 +368,18 @@ export default function HomePage() {
                 </div>
                 
                 {/* CTA Button */}
-                <button className="group relative w-full px-8 py-4 rounded-2xl text-lg font-medium transition-all duration-500 overflow-hidden">
+                <button 
+                  onClick={handlePayment}
+                  disabled={isProcessingPayment}
+                  className="group relative w-full px-8 py-4 rounded-2xl text-lg font-medium transition-all duration-500 overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl"></div>
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
                   <div className="relative z-10 flex items-center justify-center text-white">
-                    <span>Mulai Berlangganan</span>
-                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                    <span>{isProcessingPayment ? 'Memproses...' : 'Mulai Berlangganan'}</span>
+                    {!isProcessingPayment && (
+                      <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                    )}
                   </div>
                 </button>
                 
@@ -256,7 +391,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-      
+
       {/* CTA Section */}
       <section className="relative py-20 lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -288,7 +423,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

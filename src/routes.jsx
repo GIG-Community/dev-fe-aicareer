@@ -13,6 +13,7 @@ import RegisterPage from './pages/register/page';
 import PaymentPage from './pages/payment/page';
 import Dashboard from './pages/dashboard/page';
 import ProtectedRoute from './components/ProtectedRoute';
+import GachaPage from './pages/aigacha/page';
 
 export const router = createBrowserRouter([
   {
@@ -28,6 +29,13 @@ export const router = createBrowserRouter([
         element: createElement(ProtectedRoute, { 
           children: createElement(AimprovePage),
           requiresPremium: true 
+        })
+      },
+      {
+        path: '/aigacha',
+        element: createElement(ProtectedRoute, { 
+          children: createElement(GachaPage),
+          requiresPremium: false 
         })
       },
       {

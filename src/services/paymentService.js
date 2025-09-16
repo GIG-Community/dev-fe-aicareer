@@ -288,12 +288,11 @@ export const handleRealPaymentFlow = async (orderData, callbacks = {}) => {
 
 // Improved payment link with dynamic parameters
 export const createPaymentLink = (orderData) => {
-  // Use your actual Payment Link ID
-  const paymentLinkId = import.meta.env.VITE_MIDTRANS_PAYMENT_LINK_ID || '1757960845938';
+  // Use your actual Payment Link ID (standard price)
+  const paymentLinkId = discountConfig.standardPaymentLinkId;
   
-  const baseUrl = midtransConfig.isProduction 
-    ? 'https://app.midtrans.com'
-    : 'https://app.sandbox.midtrans.com';
+  // Use production links directly
+  const baseUrl = 'https://app.midtrans.com';
   
   // Generate a unique identifier for this payment attempt
   const uniqueId = `${auth.currentUser?.uid || 'guest'}-${Date.now()}`;
@@ -304,12 +303,45 @@ export const createPaymentLink = (orderData) => {
     order_ref: `ORDER-${Date.now()}`,
     customer: orderData.customerName || '',
     email: orderData.customerEmail || '',
-    amount: orderData.amount || 0,
+    amount: orderData.amount || 24900,
     item: orderData.itemName || 'Premium Plan'
   });
   
   // Create payment link with query parameters to make it unique per transaction
   return `${baseUrl}/payment-links/${paymentLinkId}?${params.toString()}`;
+};
+
+// Updated payment link creation with discount support
+export const createPaymentLinkWithDiscount = (orderData, discountCode = null) => {
+  const priceInfo = getPriceByDiscountCode(discountCode);
+  
+  // Select appropriate payment link
+  const paymentLinkId = priceInfo.isDiscount 
+    ? discountConfig.discountPaymentLinkId 
+    : discountConfig.standardPaymentLinkId;
+  
+  // Use production links directly
+  const baseUrl = 'https://app.midtrans.com';
+  
+  // Generate a unique identifier for this payment attempt
+  const uniqueId = `${auth.currentUser?.uid || 'guest'}-${Date.now()}`;
+  
+  // Add unique identifier and order data as query parameters
+  const params = new URLSearchParams({
+    unique_id: uniqueId,
+    order_ref: `ORDER-${Date.now()}`,
+    customer: orderData.customerName || '',
+    email: orderData.customerEmail || '',
+    amount: priceInfo.price,
+    item: orderData.itemName || 'Premium Plan',
+    discount_code: discountCode || '',
+    is_discount: priceInfo.isDiscount.toString()
+  });
+  
+  return {
+    url: `${baseUrl}/payment-links/${paymentLinkId}?${params.toString()}`,
+    priceInfo: priceInfo
+  };
 };
 
 // Import Firebase functions
@@ -443,7 +475,7 @@ export const handleSafePaymentFlow = async (orderData, callbacks = {}) => {
       throw new Error('User must be authenticated to make payment');
     }
 
-    // Payment Link approach (recommended since you have it setup)
+    // Payment Link approach using production link
     const paymentUrl = createPaymentLink(orderData);
     
     // Store transaction in Firebase with updated amount
@@ -458,8 +490,9 @@ export const handleSafePaymentFlow = async (orderData, callbacks = {}) => {
       itemName: orderData.itemName || 'AI Career Premium Plan - Monthly',
       paymentMethod: 'payment_link',
       paymentUrl: paymentUrl,
-      paymentLinkId: import.meta.env.VITE_MIDTRANS_PAYMENT_LINK_ID || '1757960845938',
-      userId: auth.currentUser.uid
+      paymentLinkId: discountConfig.standardPaymentLinkId, // Use production link
+      userId: auth.currentUser.uid,
+      environment: 'production' // Mark as production
     });
 
     const transactionId = await storePaymentTransaction(transactionData);
@@ -476,38 +509,38 @@ export const handleSafePaymentFlow = async (orderData, callbacks = {}) => {
     
     await updateUserStatus(auth.currentUser.uid, userStatusUpdate);
     
-        // Show success message before redirect
-        if (callbacks.onSuccess) {
-          callbacks.onSuccess({
-            transactionId: transactionId,
-            paymentUrl: paymentUrl,
-            message: 'Payment link created successfully'
-          });
-        }
-        
-        // Open payment URL
-        window.open(paymentUrl, '_blank');
-        
-        return transactionId;
-      } catch (error) {
-        console.error('Error in safe payment flow:', error);
-        if (callbacks.onError) callbacks.onError(error);
-        throw error;
-      }
-    };
+    // Show success message before redirect
+    if (callbacks.onSuccess) {
+      callbacks.onSuccess({
+        transactionId: transactionId,
+        paymentUrl: paymentUrl,
+        message: 'Payment link created successfully'
+      });
+    }
     
-    // Check if user's premium subscription has expired
-    export const checkPremiumExpiry = async () => {
-      try {
-        if (!auth.currentUser) {
-          return false;
-        }
-        
-        // This should be called periodically or on app load
-        // In a real app, this would be handled by a backend service
-        const userStatus = await getUserStatus(auth.currentUser.uid);
+    // Open payment URL
+    window.open(paymentUrl, '_blank');
     
-    if (userStatus?.isPremium && userStatus?.premiumExpiry) {
+    return transactionId;
+  } catch (error) {
+    console.error('Error in safe payment flow:', error);
+    if (callbacks.onError) callbacks.onError(error);
+    throw error;
+  }
+};
+
+// Check if user's premium subscription has expired
+export const checkPremiumExpiry = async () => {
+  try {
+    if (!auth.currentUser) {
+      return false;
+    }
+    
+    // This should be called periodically or on app load
+    // In a real app, this would be handled by a backend service
+    const userStatus = await getUserStatus(auth.currentUser.uid);
+
+if (userStatus?.isPremium && userStatus?.premiumExpiry) {
       const expiryDate = new Date(userStatus.premiumExpiry);
       const now = new Date();
       
@@ -549,4 +582,108 @@ export const getStoredTransactions = () => {
 // Reset Snap state if needed
 export const resetSnapState = () => {
   snapState = 'idle';
+};
+
+// Discount configuration
+const discountConfig = {
+  code: "19JUTALAPANGANKERJA",
+  standardPrice: 24900,
+  discountPrice: 9900, // Updated discount price
+  standardPaymentLinkId: "1758024912410",
+  discountPaymentLinkId: "1758024978813"
+};
+
+// Validate discount code
+export const validateDiscountCode = (code) => {
+  return code === discountConfig.code;
+};
+
+// Get price based on discount code
+export const getPriceByDiscountCode = (discountCode) => {
+  if (validateDiscountCode(discountCode)) {
+    return {
+      price: discountConfig.discountPrice,
+      isDiscount: true,
+      originalPrice: discountConfig.standardPrice,
+      discount: discountConfig.standardPrice - discountConfig.discountPrice
+    };
+  }
+  return {
+    price: discountConfig.standardPrice,
+    isDiscount: false,
+    originalPrice: discountConfig.standardPrice,
+    discount: 0
+  };
+};
+
+// Updated safe payment flow with discount support
+export const handleSafePaymentFlowWithDiscount = async (orderData, discountCode = null, callbacks = {}) => {
+  try {
+    // Check if user is authenticated
+    if (!auth.currentUser) {
+      throw new Error('User must be authenticated to make payment');
+    }
+
+    // Get payment link with discount
+    const paymentResult = createPaymentLinkWithDiscount(orderData, discountCode);
+    const { url: paymentUrl, priceInfo } = paymentResult;
+    
+    // Store transaction in Firebase with discount info
+    const transactionData = cleanObject({
+      orderId: `ORDER-${Date.now()}`,
+      customerDetails: {
+        name: orderData.customerName,
+        email: orderData.customerEmail,
+        phone: orderData.customerPhone
+      },
+      amount: priceInfo.price,
+      originalAmount: priceInfo.originalPrice,
+      discount: priceInfo.discount,
+      discountCode: discountCode,
+      isDiscount: priceInfo.isDiscount,
+      itemName: orderData.itemName || 'AI Career Premium Plan - Monthly',
+      paymentMethod: 'payment_link',
+      paymentUrl: paymentUrl,
+      paymentLinkId: priceInfo.isDiscount ? discountConfig.discountPaymentLinkId : discountConfig.standardPaymentLinkId,
+      userId: auth.currentUser.uid,
+      environment: 'production' // Mark as production
+    });
+
+    const transactionId = await storePaymentTransaction(transactionData);
+    
+    // Update user status to indicate pending payment
+    const userStatusUpdate = cleanObject({
+      paymentStatus: 'pending',
+      pendingTransactionId: transactionId,
+      pendingAmount: priceInfo.price,
+      pendingPlan: orderData.itemName && orderData.itemName.includes('Premium') ? 'premium' : 'basic',
+      discountCode: discountCode,
+      isDiscountPayment: priceInfo.isDiscount
+    });
+    
+    console.log('About to update user status with discount:', userStatusUpdate);
+    
+    await updateUserStatus(auth.currentUser.uid, userStatusUpdate);
+    
+    // Show success message before redirect
+    if (callbacks.onSuccess) {
+      callbacks.onSuccess({
+        transactionId: transactionId,
+        paymentUrl: paymentUrl,
+        priceInfo: priceInfo,
+        message: priceInfo.isDiscount 
+          ? `Payment link created with discount! Price: Rp ${priceInfo.price.toLocaleString()} (Save Rp ${priceInfo.discount.toLocaleString()})`
+          : 'Payment link created successfully'
+      });
+    }
+    
+    // Open payment URL
+    window.open(paymentUrl, '_blank');
+    
+    return { transactionId, priceInfo };
+  } catch (error) {
+    console.error('Error in safe payment flow with discount:', error);
+    if (callbacks.onError) callbacks.onError(error);
+    throw error;
+  }
 };

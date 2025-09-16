@@ -1,13 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Globe2, ArrowLeft, Trophy, Clock, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../../lib/firebase';
+import LayoutWrapper from '../../components/layout/LayoutWrapper';
 
-export default function AinterviewPage() {
+function AinterviewContent() {
   const navigate = useNavigate();
   const [interviewStarted, setInterviewStarted] = useState(false);
   const [sessionResults, setSessionResults] = useState(null);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const handleStartInterview = () => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
     navigate('/ainterview/interview-simulation');
   };
 
@@ -46,7 +61,7 @@ export default function AinterviewPage() {
     const stats = calculateSessionStats();
     
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pt-32">
+      <div className={`min-h-screen ${user ? 'p-8' : 'bg-gradient-to-br from-blue-50 to-indigo-100 pt-32'}`}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-6">
@@ -151,7 +166,7 @@ export default function AinterviewPage() {
 
   // Landing/Setup View
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pt-32">
+    <div className={`min-h-screen ${user ? 'p-8' : 'bg-gradient-to-br from-blue-50 to-indigo-100 pt-32'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-6">
@@ -163,6 +178,13 @@ export default function AinterviewPage() {
           <p className="text-xl text-slate-600 mb-8">
             Practice and perfect your interview skills with AI-powered mock interviews supporting multiple languages.
           </p>
+          {!user && (
+            <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+              <p className="text-blue-700">
+                <strong>Login required:</strong> Please log in to access AI Interview features.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Features Grid */}
@@ -209,11 +231,19 @@ export default function AinterviewPage() {
               onClick={handleStartInterview}
               className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 px-8 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg"
             >
-              Start Interview Practice
+              {user ? 'Start Interview Practice' : 'Login to Start Interview'}
             </button>
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AinterviewPage() {
+  return (
+    <LayoutWrapper>
+      <AinterviewContent />
+    </LayoutWrapper>
   );
 }

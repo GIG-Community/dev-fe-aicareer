@@ -17,6 +17,10 @@ import {
   AlertTriangle,
   Settings
 } from 'lucide-react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../../lib/firebase';
+import { useNavigate } from 'react-router-dom';
+import LayoutWrapper from '../../components/layout/LayoutWrapper';
 
 const jobRoles = [
   // Technology/IT
@@ -171,7 +175,7 @@ const languages = [
   { id: 'cpp', name: 'C++', extension: 'cpp' }
 ];
 
-export default function AitestPage() {
+function AitestContent() {
   const [selectedRole, setSelectedRole] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState('javascript');
@@ -188,6 +192,8 @@ export default function AitestPage() {
   const timerRef = useRef(null);
   const videoRef = useRef(null);
   const codeRef = useRef(null);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   // Camera monitoring
   useEffect(() => {
@@ -259,6 +265,11 @@ export default function AitestPage() {
   };
 
   const startProblem = () => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    
     if (selectedRole && selectedDifficulty) {
       const problem = sampleProblems[selectedRole]?.[selectedDifficulty];
       if (problem) {
@@ -301,9 +312,16 @@ export default function AitestPage() {
     runCode();
   };
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
   if (!currentProblem) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pt-32">
+      <div className={`min-h-screen ${user ? 'p-8' : 'bg-gradient-to-br from-blue-50 to-indigo-100 pt-32'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-12">
@@ -316,6 +334,13 @@ export default function AitestPage() {
             <p className="text-xl text-slate-600 mb-8">
               Practice coding problems tailored to your career path with AI-powered feedback
             </p>
+            {!user && (
+              <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                <p className="text-blue-700">
+                  <strong>Login required:</strong> Please log in to access AI Test features and save your progress.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Streak Display */}
@@ -410,7 +435,7 @@ export default function AitestPage() {
                 className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center"
               >
                 <Code className="w-5 h-5 mr-2" />
-                Start Coding Challenge
+                {user ? 'Start Coding Challenge' : 'Login to Start Challenge'}
               </button>
             </div>
           </div>
@@ -420,7 +445,7 @@ export default function AitestPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-20">
+    <div className={`min-h-screen ${user ? '' : 'bg-slate-50 pt-20'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Camera Feed */}
         {cameraEnabled && (
@@ -641,5 +666,13 @@ export default function AitestPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AitestPage() {
+  return (
+    <LayoutWrapper>
+      <AitestContent />
+    </LayoutWrapper>
   );
 }
