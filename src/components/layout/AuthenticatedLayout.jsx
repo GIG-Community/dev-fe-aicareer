@@ -98,9 +98,9 @@ const AuthenticatedLayout = ({ children }) => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         <header className="glass-card p-6 border-b flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-slate-800">
+          <p className="text-xl font-bold text-slate-800">
             {getActiveRoute().charAt(0).toUpperCase() + getActiveRoute().slice(1).replace('ai', 'AI ')}
-          </h1>
+          </p>
           {userStatus?.isPremium && (
             <div className="flex items-center gap-2 text-amber-600">
               <Crown className="w-5 h-5" />

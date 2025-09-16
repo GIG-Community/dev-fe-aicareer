@@ -45,7 +45,10 @@ export default function Navbar() {
             })
           ),
           // CTA Button
-          createElement('button', { className: "px-6 py-2 rounded-xl text-sm font-medium bg-gradient-to-r from-blue-600 to-blue-500 text-white" },
+          createElement(Link, { 
+            to: "/login",
+            className: "px-6 py-2 rounded-xl text-sm font-medium bg-gradient-to-r from-blue-600 to-blue-500 text-white" 
+          },
             "Get Started"
           )
         )
@@ -91,7 +94,10 @@ export default function Navbar() {
                 createElement('span', { className: "text-sm font-medium" }, item.name)
               )
             }),
-            createElement('button', { className: "w-full mt-4 px-4 py-3 rounded-xl text-sm font-medium bg-gradient-to-r from-blue-600 to-blue-500 text-white" },
+            createElement(Link, { 
+              to: "/login",
+              className: "w-full mt-4 px-4 py-3 rounded-xl text-sm font-medium bg-gradient-to-r from-blue-600 to-blue-500 text-white text-center block" 
+            },
               "Get Started"
             )
           )

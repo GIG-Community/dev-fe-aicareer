@@ -458,23 +458,23 @@ const InterviewSimulation = ({ onEnd }) => {
   // Setup View - Enhanced with RAG insights
   if (!setupComplete) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4 pt-20">
-        <div className="glass-card rounded-xl shadow-xl p-6 sm:p-8 w-full max-w-4xl">
-          <div className="text-center mb-6 sm:mb-8">
-            <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Video className="w-8 h-8 text-white" />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-2 sm:p-4 pt-20">
+        <div className="glass-card rounded-xl shadow-xl p-4 sm:p-6 lg:p-8 w-full max-w-4xl mx-2">
+          <div className="text-center mb-4 sm:mb-6 lg:mb-8">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+              <Video className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">AI Interview Simulation</h2>
-            <p className="text-gray-600">Set up your personalized interview session</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">AI Interview Simulation</h2>
+            <p className="text-sm sm:text-base text-gray-600">Set up your personalized interview session</p>
           </div>
 
-          {/* Document Upload Section - Wider and more prominent */}
-          <div className="mb-8">
-            <label className="block text-base font-medium text-gray-700 mb-3">
-              Upload CV/Portfolio (Recommended for Personalized Experience)
+          {/* Document Upload Section - Mobile optimized */}
+          <div className="mb-6 sm:mb-8">
+            <label className="block text-sm sm:text-base font-medium text-gray-700 mb-2 sm:mb-3">
+              Upload CV/Portfolio (Recommended)
             </label>
             
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 sm:p-8 text-center hover:border-blue-400 transition-colors bg-white bg-opacity-50">
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 sm:p-6 lg:p-8 text-center hover:border-blue-400 transition-colors bg-white bg-opacity-50">
               <input
                 ref={fileInputRef}
                 type="file"
@@ -484,54 +484,53 @@ const InterviewSimulation = ({ onEnd }) => {
                 className="hidden"
               />
               
-              <Upload className="w-10 h-10 text-blue-500 mx-auto mb-3" />
-              <p className="text-gray-700 mb-2 text-lg">
-                Drag and drop your CV or portfolio, or{' '}
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="text-blue-600 hover:text-blue-700 font-medium underline"
-                  disabled={isUploading}
-                >
-                  browse files
-                </button>
+              <Upload className="w-8 h-8 sm:w-10 sm:h-10 text-blue-500 mx-auto mb-2 sm:mb-3" />
+              <p className="text-gray-700 mb-2 text-sm sm:text-lg">
+                Tap to upload your CV or portfolio
               </p>
-              <p className="text-sm text-gray-500 max-w-lg mx-auto">
-                Supports PDF, DOC, DOCX, TXT, JPG, PNG (max 10MB each). 
-                PDF and DOC files will be automatically converted to text.
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm sm:text-base"
+                disabled={isUploading}
+              >
+                Choose Files
+              </button>
+              <p className="text-xs sm:text-sm text-gray-500 mt-2 max-w-lg mx-auto">
+                PDF, DOC, DOCX, TXT, JPG, PNG (max 10MB each)
               </p>
               
               {isUploading && (
                 <div className="mt-4 flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
-                  <span className="ml-2 text-blue-600">Uploading and analyzing...</span>
+                  <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-blue-600"></div>
+                  <span className="ml-2 text-blue-600 text-sm">Uploading...</span>
                 </div>
               )}
               
               {uploadError && (
-                <div className="mt-4 text-sm text-red-600 bg-red-50 p-3 rounded max-w-lg mx-auto">
+                <div className="mt-4 text-xs sm:text-sm text-red-600 bg-red-50 p-2 sm:p-3 rounded max-w-lg mx-auto">
                   {uploadError}
                 </div>
               )}
             </div>
 
-            {/* Uploaded Documents - Made more spacious */}
+            {/* Uploaded Documents - Mobile optimized */}
             {uploadedDocuments.length > 0 && (
-              <div className="mt-6 space-y-3">
-                <h4 className="text-base font-medium text-gray-700">Uploaded Documents:</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="mt-4 sm:mt-6 space-y-2 sm:space-y-3">
+                <h4 className="text-sm sm:text-base font-medium text-gray-700">Uploaded Documents:</h4>
+                <div className="grid grid-cols-1 gap-2 sm:gap-3">
                   {uploadedDocuments.map((doc) => (
-                    <div key={doc.id} className="flex flex-col bg-green-50 border border-green-200 rounded-lg p-3 sm:p-4">
+                    <div key={doc.id} className="flex flex-col bg-green-50 border border-green-200 rounded-lg p-3">
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center overflow-hidden">
-                          <FileText className="w-5 h-5 text-green-600 mr-2 flex-shrink-0" />
-                          <span className="text-sm text-green-800 truncate">{doc.name}</span>
-                          <CheckCircle className="w-4 h-4 text-green-600 ml-2 flex-shrink-0" />
+                        <div className="flex items-center overflow-hidden flex-1 mr-2">
+                          <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 mr-2 flex-shrink-0" />
+                          <span className="text-xs sm:text-sm text-green-800 truncate">{doc.name}</span>
+                          <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 ml-2 flex-shrink-0" />
                         </div>
                         <button
                           onClick={() => documentService.removeDocument(doc.id)}
-                          className="text-red-500 hover:text-red-700 flex-shrink-0 ml-2"
+                          className="text-red-500 hover:text-red-700 flex-shrink-0 p-1"
                         >
-                          <Trash2 className="w-5 h-5" />
+                          <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                         </button>
                       </div>
                       {doc.processingMethod && (
@@ -543,78 +542,42 @@ const InterviewSimulation = ({ onEnd }) => {
                   ))}
                 </div>
                 
-                {/* Enhanced Document Analysis Summary - Wider and better organized */}
+                {/* Document Analysis Summary - Mobile optimized */}
                 {documentAnalysis && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-5 mt-4">
-                    <h5 className="text-base font-medium text-blue-800 mb-3">📊 Analysis Results:</h5>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 lg:p-5 mt-3 sm:mt-4">
+                    <h5 className="text-sm sm:text-base font-medium text-blue-800 mb-2 sm:mb-3">📊 Analysis Results:</h5>
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-3">
-                      <div className="bg-white rounded p-3">
-                        <div className="font-medium text-gray-700">Content Extracted</div>
-                        <div className="text-blue-700">Skills: {documentAnalysis.skills?.length || 0} found</div>
-                        <div className="text-blue-700">Experience: {documentAnalysis.experience?.length || 0} entries</div>
-                        <div className="text-blue-700">Projects: {documentAnalysis.projects?.length || 0} found</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm mb-2 sm:mb-3">
+                      <div className="bg-white rounded p-2 sm:p-3">
+                        <div className="font-medium text-gray-700 text-xs sm:text-sm">Content Extracted</div>
+                        <div className="text-blue-700 text-xs">Skills: {documentAnalysis.skills?.length || 0}</div>
+                        <div className="text-blue-700 text-xs">Experience: {documentAnalysis.experience?.length || 0}</div>
+                        <div className="text-blue-700 text-xs">Projects: {documentAnalysis.projects?.length || 0}</div>
                       </div>
-                      <div className="bg-white rounded p-3">
-                        <div className="font-medium text-gray-700">Document Parsing</div>
-                        <div className="text-blue-700">Text Chunks: {documentAnalysis.chunks || 0}</div>
-                        <div className="text-blue-700">Total Words: {documentAnalysis.rawContent?.split(' ').length || 0}</div>
+                      <div className="bg-white rounded p-2 sm:p-3">
+                        <div className="font-medium text-gray-700 text-xs sm:text-sm">Document Info</div>
+                        <div className="text-blue-700 text-xs">Chunks: {documentAnalysis.chunks || 0}</div>
+                        <div className="text-blue-700 text-xs">Words: {documentAnalysis.rawContent?.split(' ').length || 0}</div>
                       </div>
                     </div>
 
-                    {documentAnalysis.summary?.topKeywords && documentAnalysis.summary.topKeywords.length > 0 ? (
-                      <div className="bg-white rounded p-3 mb-3">
-                        <div className="font-medium text-gray-700 mb-1">🔍 Skills Detected in CV:</div>
+                    {documentAnalysis.summary?.topKeywords && documentAnalysis.summary.topKeywords.length > 0 && (
+                      <div className="bg-white rounded p-2 sm:p-3 mb-2 sm:mb-3">
+                        <div className="font-medium text-gray-700 mb-1 text-xs sm:text-sm">🔍 Skills Detected:</div>
                         <div className="flex flex-wrap gap-1">
-                          {documentAnalysis.summary.topKeywords.map((keyword, index) => (
-                            <span key={index} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                          {documentAnalysis.summary.topKeywords.slice(0, 6).map((keyword, index) => (
+                            <span key={index} className="bg-blue-100 text-blue-800 text-xs px-1.5 py-0.5 sm:px-2 sm:py-1 rounded">
                               {keyword}
                             </span>
                           ))}
                         </div>
                       </div>
-                    ) : (
-                      <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mb-3">
-                        <div className="text-yellow-800 text-xs">
-                          ⚠️ No technical skills detected in CV. Questions will be generic.
-                        </div>
-                      </div>
                     )}
 
-                    {/* Interview Insights - Only show if available */}
-                    {interviewInsights ? (
-                      <div className="bg-white rounded p-3">
-                        <div className="font-medium text-gray-700 mb-2">🎯 Interview Assessment:</div>
-                        <div className="text-xs space-y-1">
-                          {interviewInsights.experienceLevel && (
-                            <div className="text-green-700">
-                              Experience Level: <span className="font-medium">{interviewInsights.experienceLevel}</span>
-                            </div>
-                          )}
-                          {interviewInsights.focusAreas && interviewInsights.focusAreas.length > 0 && (
-                            <div className="text-blue-700">
-                              Focus Areas: {interviewInsights.focusAreas.join(', ')}
-                            </div>
-                          )}
-                          {interviewInsights.strengths && interviewInsights.strengths.length > 0 && (
-                            <div className="text-purple-700">
-                              Key Strengths: {interviewInsights.strengths.join(', ')}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="bg-gray-50 rounded p-3">
-                        <div className="text-gray-600 text-xs">
-                          ℹ️ Insufficient CV data for detailed insights. General questions will be used.
-                        </div>
-                      </div>
-                    )}
-                    
-                    <p className="text-xs text-blue-600 mt-3 font-medium">
+                    <p className="text-xs text-blue-600 font-medium">
                       {documentAnalysis.skills?.length > 0 || documentAnalysis.experience?.length > 0 
-                        ? '✨ Questions will be personalized based on your CV content'
-                        : '⚠️ Questions will be generic due to insufficient CV information'
+                        ? '✨ Questions will be personalized'
+                        : '⚠️ Generic questions will be used'
                       }
                     </p>
                   </div>
@@ -623,13 +586,13 @@ const InterviewSimulation = ({ onEnd }) => {
             )}
           </div>
 
-          {/* Rest of the setup screen content in two columns for better layout */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              {/* Camera Preview */}
-              <div className="mb-6">
-                <label className="block text-base font-medium text-gray-700 mb-2">Camera Preview</label>
-                <div className="relative bg-gray-100 rounded-lg overflow-hidden h-36 sm:h-48 flex items-center justify-center">
+          {/* Setup options - Mobile stacked layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <div className="space-y-3 sm:space-y-4">
+              {/* Camera Preview - Mobile optimized */}
+              <div className="mb-4 sm:mb-6">
+                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-2">Camera Preview</label>
+                <div className="relative bg-gray-100 rounded-lg overflow-hidden h-32 sm:h-36 lg:h-48 flex items-center justify-center">
                   {cameraStream && cameraEnabled ? (
                     <video
                       ref={userVideoRef}
@@ -646,8 +609,8 @@ const InterviewSimulation = ({ onEnd }) => {
                     />
                   ) : (
                     <div className="text-center">
-                      <Camera className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                      <p className="text-gray-500 text-sm">
+                      <Camera className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400 mx-auto mb-2" />
+                      <p className="text-gray-500 text-xs sm:text-sm">
                         {cameraError ? 'Camera access denied' : 'Camera preview'}
                       </p>
                     </div>
@@ -662,7 +625,7 @@ const InterviewSimulation = ({ onEnd }) => {
                       setCameraEnabled(true);
                       startCamera();
                     }}
-                    className={`text-sm px-3 py-1 rounded ${
+                    className={`text-xs sm:text-sm px-3 py-1.5 sm:py-2 rounded transition-colors ${
                       cameraEnabled 
                         ? 'bg-red-100 text-red-700 hover:bg-red-200' 
                         : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
@@ -674,11 +637,11 @@ const InterviewSimulation = ({ onEnd }) => {
               </div>
 
               <div>
-                <label className="block text-base font-medium text-gray-700 mb-2">Interview Type</label>
+                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-2">Interview Type</label>
                 <select
                   value={interviewType}
                   onChange={(e) => setInterviewType(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                  className="w-full p-2.5 sm:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-sm sm:text-base"
                 >
                   <option value="normal">Normal Interview</option>
                   <option value="technical">Technical Interview</option>
@@ -687,59 +650,54 @@ const InterviewSimulation = ({ onEnd }) => {
               </div>
 
               <div>
-                <label className="block text-base font-medium text-gray-700 mb-2">Job Role</label>
+                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-2">Job Role</label>
                 <select
                   value={jobRole}
                   onChange={(e) => setJobRole(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white max-h-40 overflow-y-auto"
+                  className="w-full p-2.5 sm:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-sm sm:text-base max-h-32 sm:max-h-40 overflow-y-auto"
                 >
-                  {/* Simplified job roles list - you can include the full list from existing code */}
-                  <option value="Software Developer">Software Developer</option>
-                  <option value="Full Stack Developer">Full Stack Developer</option>
-                  <option value="Data Scientist">Data Scientist</option>
-                  <option value="Digital Marketing Manager">Digital Marketing Manager</option>
-                  <option value="UI/UX Designer">UI/UX Designer</option>
-                  <option value="Product Manager">Product Manager</option>
-                  {/* Add more as needed */}
+                  {jobRoles.map(role => (
+                    <option key={role} value={role}>{role}</option>
+                  ))}
                 </select>
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div>
-                <label className="block text-base font-medium text-gray-700 mb-2">Language</label>
-                <div className="grid grid-cols-1 gap-3">
+                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-2">Language</label>
+                <div className="grid grid-cols-1 gap-2 sm:gap-3">
                   {languages.map((lang) => (
                     <button
                       key={lang.code}
                       onClick={() => setLanguage(lang.code)}
-                      className={`relative p-4 border-2 rounded-lg text-left transition-all transform hover:scale-[1.02] ${
+                      className={`relative p-3 sm:p-4 border-2 rounded-lg text-left transition-all ${
                         language === lang.code
                           ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-lg'
                           : 'border-gray-300 hover:border-gray-400 bg-white hover:bg-gray-50'
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <span className="text-2xl">{lang.flag}</span>
+                        <div className="flex items-center space-x-2 sm:space-x-3">
+                          <span className="text-xl sm:text-2xl">{lang.flag}</span>
                           <div>
-                            <div className="font-medium text-base">{lang.nativeName}</div>
-                            <div className="text-sm text-gray-500">{lang.name}</div>
+                            <div className="font-medium text-sm sm:text-base">{lang.nativeName}</div>
+                            <div className="text-xs sm:text-sm text-gray-500">{lang.name}</div>
                           </div>
                         </div>
                         {language === lang.code && (
-                          <div className="flex items-center space-x-2">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                            <span className="text-xs font-medium text-blue-600">Selected</span>
+                          <div className="flex items-center space-x-1 sm:space-x-2">
+                            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                            <span className="text-xs font-medium text-blue-600 hidden sm:inline">Selected</span>
                           </div>
                         )}
                       </div>
                       
-                      {/* Sample question preview */}
+                      {/* Sample question preview - hidden on small screens */}
                       {language === lang.code && (
-                        <div className="mt-3 pt-3 border-t border-blue-200">
+                        <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-blue-200 hidden sm:block">
                           <div className="text-xs text-blue-600 font-medium mb-1">Sample Question:</div>
-                          <div className="text-sm text-blue-700 italic">
+                          <div className="text-xs sm:text-sm text-blue-700 italic">
                             "{lang.sample}"
                           </div>
                         </div>
@@ -750,41 +708,41 @@ const InterviewSimulation = ({ onEnd }) => {
               </div>
 
               <div>
-                <label className="block text-base font-medium text-gray-700 mb-2">AI Interviewer Voice</label>
-                <div className="grid grid-cols-2 gap-3">
+                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-2">AI Voice</label>
+                <div className="grid grid-cols-2 gap-2 sm:gap-3">
                   <button
                     onClick={() => handleVoiceGenderChange('female')}
-                    className={`p-3 border-2 rounded-lg text-center transition-all ${
+                    className={`p-2.5 sm:p-3 border-2 rounded-lg text-center transition-all ${
                       voiceGender === 'female'
                         ? 'border-blue-500 bg-blue-50 text-blue-700'
                         : 'border-gray-300 hover:border-gray-400 bg-white'
                     }`}
                   >
-                    <User className="w-5 h-5 mx-auto mb-1" />
-                    <div className="text-sm font-medium">Female Voice</div>
-                    <div className="text-xs text-gray-500">Professional & Clear</div>
+                    <User className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1" />
+                    <div className="text-xs sm:text-sm font-medium">Female</div>
+                    <div className="text-xs text-gray-500 hidden sm:block">Professional</div>
                   </button>
                   <button
                     onClick={() => handleVoiceGenderChange('male')}
-                    className={`p-3 border-2 rounded-lg text-center transition-all ${
+                    className={`p-2.5 sm:p-3 border-2 rounded-lg text-center transition-all ${
                       voiceGender === 'male'
                         ? 'border-blue-500 bg-blue-50 text-blue-700'
                         : 'border-gray-300 hover:border-gray-400 bg-white'
                     }`}
                   >
-                    <User className="w-5 h-5 mx-auto mb-1" />
-                    <div className="text-sm font-medium">Male Voice</div>
-                    <div className="text-xs text-gray-500">Authoritative & Warm</div>
+                    <User className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1" />
+                    <div className="text-xs sm:text-sm font-medium">Male</div>
+                    <div className="text-xs text-gray-500 hidden sm:block">Authoritative</div>
                   </button>
                 </div>
               </div>
 
               <div>
-                <label className="block text-base font-medium text-gray-700 mb-2">Difficulty</label>
+                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-2">Difficulty</label>
                 <select
                   value={difficulty}
                   onChange={(e) => setDifficulty(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                  className="w-full p-2.5 sm:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-sm sm:text-base"
                 >
                   <option value="easy">Easy</option>
                   <option value="medium">Medium</option>
@@ -796,7 +754,7 @@ const InterviewSimulation = ({ onEnd }) => {
 
           <button
             onClick={handleStartInterview}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-medium transition-colors mt-8"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 sm:py-4 px-6 rounded-lg font-medium transition-colors mt-6 sm:mt-8 text-sm sm:text-base"
           >
             Start Interview Simulation
           </button>
@@ -805,66 +763,66 @@ const InterviewSimulation = ({ onEnd }) => {
     );
   }
 
-  // Video Call Interface - Enhanced with Real Camera
+  // Video Call Interface - Mobile optimized
   return (
-    <div className="fixed inset-0 h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex flex-col overflow-hidden z-50 pt-16">
-        {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center flex-shrink-0">
-            <div className="flex items-center space-x-4">
-                <h1 className="text-gray-800 font-medium">AI Interview Simulation</h1>
-                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
-                    Question {questionCount}
+    <div className="fixed inset-0 h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex flex-col overflow-hidden z-50 pt-14 sm:pt-16">
+        {/* Header - Mobile optimized */}
+        <div className="bg-white border-b border-gray-200 px-2 sm:px-4 py-2 sm:py-3 flex justify-between items-center flex-shrink-0">
+            <div className="flex items-center space-x-2 sm:space-x-4 overflow-hidden">
+                <h1 className="text-gray-800 font-medium text-sm sm:text-base truncate">AI Interview</h1>
+                <span className="bg-blue-100 text-blue-800 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-xs">
+                    Q{questionCount}
                 </span>
-                {/* Speaking Timer */}
-                <div className="flex items-center space-x-2">
-                    <Clock className="w-4 h-4 text-gray-500" />
-                    <span className="text-gray-600 text-sm">
-                        Speaking: {formatTime(speakingDuration)} / Total: {formatTime(totalSpeakingTime)}
+                {/* Speaking Timer - Simplified for mobile */}
+                <div className="flex items-center space-x-1 sm:space-x-2 hidden sm:flex">
+                    <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500" />
+                    <span className="text-gray-600 text-xs">
+                        {formatTime(speakingDuration)} / {formatTime(totalSpeakingTime)}
                     </span>
                 </div>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 sm:space-x-2">
                 <button
                     onClick={() => setShowChat(!showChat)}
-                    className="p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="p-1.5 sm:p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
                 >
-                    <MessageCircle className="w-5 h-5" />
+                    <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
                 <button 
                     onClick={toggleCamera}
-                    className="p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="p-1.5 sm:p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
                 >
-                    <Camera className="w-5 h-5" />
+                    <Camera className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
             </div>
         </div>
 
-        {/* Main Video Area */}
+        {/* Main Video Area - Mobile optimized */}
         <div className="flex-1 flex min-h-0">
-            {/* Video Grid */}
-            <div className="flex-1 p-4 overflow-auto">
-                <div className="grid grid-cols-2 gap-4 h-full max-h-[400px]">
+            {/* Video Grid - Stacked on mobile, side by side on larger screens */}
+            <div className="flex-1 p-2 sm:p-4 overflow-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 h-full max-h-[300px] sm:max-h-[400px]">
                     {/* AI Interviewer */}
                     <div className="relative bg-white border border-gray-200 rounded-xl overflow-hidden shadow-lg">
                         <div className="absolute inset-0 flex items-center justify-center">
                             <div className="text-center">
-                                <div className={`w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 ${isSpeaking ? 'ring-4 ring-green-400 animate-pulse' : ''}`}>
-                                    <span className="text-2xl font-bold text-white">AI</span>
+                                <div className={`w-16 h-16 sm:w-24 sm:h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-4 ${isSpeaking ? 'ring-2 sm:ring-4 ring-green-400 animate-pulse' : ''}`}>
+                                    <span className="text-lg sm:text-2xl font-bold text-white">AI</span>
                                 </div>
-                                <h3 className="text-gray-800 font-medium">AI Interviewer</h3>
-                                <p className="text-gray-500 text-sm mt-1">
+                                <h3 className="text-gray-800 font-medium text-sm sm:text-base">AI Interviewer</h3>
+                                <p className="text-gray-500 text-xs sm:text-sm mt-1">
                                     {isSpeaking ? 'Speaking...' : 'Listening'}
                                 </p>
                             </div>
                         </div>
-                        <div className="absolute bottom-4 left-4">
-                            <span className="bg-black bg-opacity-75 text-white px-2 py-1 rounded text-sm">
+                        <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4">
+                            <span className="bg-black bg-opacity-75 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-xs">
                                 AI Interviewer
                             </span>
                         </div>
                     </div>
 
-                    {/* User - Real Camera Feed */}
+                    {/* User - Real Camera Feed - Mobile optimized */}
                     <div className="relative bg-white border border-gray-200 rounded-xl overflow-hidden shadow-lg">
                         {cameraEnabled && videoEnabled && cameraStream && !cameraError ? (
                             <>
@@ -875,22 +833,11 @@ const InterviewSimulation = ({ onEnd }) => {
                                     playsInline
                                     className="w-full h-full object-cover"
                                     style={{ transform: 'scaleX(-1)' }}
-                                    onLoadedMetadata={() => {
-                                        if (userVideoRef.current) {
-                                            userVideoRef.current.play().catch(err => {
-                                                console.error('Video play failed:', err);
-                                            });
-                                        }
-                                    }}
-                                    onError={(e) => {
-                                        console.error('Video error:', e);
-                                        setCameraError('Video playback failed');
-                                    }}
                                 />
                                 {/* Overlay indicators */}
                                 <div className="absolute inset-0">
                                     {isListening && (
-                                        <div className="absolute inset-0 ring-4 ring-red-400 animate-pulse rounded-xl"></div>
+                                        <div className="absolute inset-0 ring-2 sm:ring-4 ring-red-400 animate-pulse rounded-xl"></div>
                                     )}
                                 </div>
                             </>
@@ -898,282 +845,277 @@ const InterviewSimulation = ({ onEnd }) => {
                             <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="text-center">
                                     {cameraError ? (
-                        <>
-                            <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                            <h3 className="text-gray-600 font-medium mb-2">Camera Unavailable</h3>
-                            <p className="text-gray-500 text-sm px-4">{cameraError}</p>
+                                        <>
+                                            <Camera className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-2 sm:mb-4" />
+                                            <h3 className="text-gray-600 font-medium mb-1 sm:mb-2 text-sm sm:text-base">Camera Unavailable</h3>
+                                            <p className="text-gray-500 text-xs sm:text-sm px-2 sm:px-4">{cameraError}</p>
+                                            <button
+                                                onClick={() => {
+                                                    setCameraError('');
+                                                    startCamera();
+                                                }}
+                                                className="mt-2 sm:mt-3 px-2 py-1 sm:px-3 sm:py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm rounded"
+                                            >
+                                                Retry
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className={`w-16 h-16 sm:w-24 sm:h-24 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-4 ${isListening ? 'ring-2 sm:ring-4 ring-red-400 animate-pulse' : ''}`}>
+                                                <span className="text-lg sm:text-2xl font-bold text-white">ME</span>
+                                            </div>
+                                            <h3 className="text-gray-800 font-medium text-sm sm:text-base">You</h3>
+                                            <p className="text-gray-500 text-xs sm:text-sm mt-1">
+                                                {isListening ? `Speaking... ${formatTime(speakingDuration)}` : 'Ready'}
+                                            </p>
+                                            {!videoEnabled && (
+                                                <p className="text-gray-400 text-xs mt-1 sm:mt-2">Camera Off</p>
+                                            )}
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                        
+                        <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4">
+                            <span className="bg-black bg-opacity-75 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-xs">
+                                You {isTranscribing && '🎤'} {cameraEnabled && videoEnabled && cameraStream && '📹'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Question Display - Mobile optimized */}
+                <div className="mt-2 sm:mt-4 bg-white border border-gray-200 rounded-xl p-3 sm:p-6 shadow-lg">
+                    <div className="flex items-center justify-between mb-2 sm:mb-4">
+                        <h3 className="text-gray-800 font-medium text-sm sm:text-base">Current Question</h3>
+                        {loading && (
+                            <div className="flex items-center text-blue-600">
+                                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-600 rounded-full animate-pulse mr-1 sm:mr-2"></div>
+                                <span className="text-xs sm:text-sm">Generating...</span>
+                            </div>
+                        )}
+                    </div>
+                    <div className="bg-gray-50 border border-gray-100 rounded-lg p-3 sm:p-4">
+                        <p className="text-gray-800 text-sm sm:text-lg leading-relaxed">
+                            {currentQuestion || 'Preparing your question...'}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Real-time Transcription - Mobile optimized */}
+                {(isTranscribing || currentTranscript || interimTranscript) && (
+                    <div className="mt-2 sm:mt-4 bg-white border border-gray-200 rounded-xl p-3 sm:p-6 shadow-lg">
+                        <h3 className="text-gray-800 font-medium mb-2 sm:mb-4 flex items-center text-sm sm:text-base">
+                            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full animate-pulse mr-1 sm:mr-2"></span>
+                            Live Transcription
+                        </h3>
+                        <div className="bg-gray-50 border border-gray-100 rounded-lg p-3 sm:p-4 min-h-[60px] sm:min-h-[80px]">
+                            <p className="text-gray-800 text-sm sm:text-base">
+                                {currentTranscript}
+                                <span className="text-gray-500 italic">
+                                    {interimTranscript && ` ${interimTranscript}`}
+                                </span>
+                                {isTranscribing && <span className="animate-pulse">|</span>}
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Answer Input - Mobile optimized */}
+                <div className="mt-2 sm:mt-4 bg-white border border-gray-200 rounded-xl p-3 sm:p-6 shadow-lg">
+                    <h3 className="text-gray-800 font-medium mb-2 sm:mb-4 text-sm sm:text-base">Your Response</h3>
+                    <textarea
+                        ref={textareaRef}
+                        value={userAnswer}
+                        onChange={(e) => setUserAnswer(e.target.value)}
+                        placeholder="Type your answer here or use voice input..."
+                        className="w-full h-24 sm:h-32 p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-sm sm:text-base"
+                        disabled={isListening}
+                    />
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-2 sm:mt-3 space-y-2 sm:space-y-0">
+                        <span className="text-gray-500 text-xs sm:text-sm">
+                            {userAnswer.length} chars • Speaking: {formatTime(totalSpeakingTime)}
+                        </span>
+                        <div className="flex space-x-2 w-full sm:w-auto">
+                            <button
+                                onClick={isListening ? stopListening : startListening}
+                                disabled={loading || !currentQuestion}
+                                className={`flex-1 sm:flex-none px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-medium transition-colors disabled:opacity-50 text-sm ${
+                                    isListening 
+                                        ? 'bg-red-600 hover:bg-red-700 text-white' 
+                                        : 'bg-blue-600 hover:bg-blue-700 text-white'
+                                }`}
+                            >
+                                {isListening ? `Stop (${formatTime(speakingDuration)})` : 'Voice'}
+                            </button>
+                            <button
+                                onClick={submitAnswer}
+                                disabled={!userAnswer.trim() || loading}
+                                className="flex-1 sm:flex-none px-3 py-2 sm:px-4 sm:py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition-colors text-sm"
+                            >
+                                {loading ? 'Evaluating...' : 'Submit'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Feedback - Mobile optimized */}
+                {feedback && (
+                    <div className="mt-2 sm:mt-4 bg-white border border-gray-200 rounded-xl p-3 sm:p-6 shadow-lg">
+                        <div className="flex items-center justify-between mb-2 sm:mb-4">
+                            <h3 className="text-gray-800 font-medium text-sm sm:text-base">AI Feedback</h3>
+                            <div className="flex items-center">
+                                <span className="text-xl sm:text-2xl font-bold text-green-600">{feedback.score}/10</span>
+                            </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-3 sm:mb-4">
+                            <div className="bg-green-50 border border-green-200 p-3 sm:p-4 rounded-lg">
+                                <h4 className="font-medium text-green-800 mb-2 text-sm sm:text-base">Strengths</h4>
+                                <ul className="text-green-700 text-xs sm:text-sm space-y-1">
+                                    {feedback.strengths.filter(s => s).map((strength, idx) => (
+                                        <li key={idx}>• {strength}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                            
+                            <div className="bg-orange-50 border border-orange-200 p-3 sm:p-4 rounded-lg">
+                                <h4 className="font-medium text-orange-800 mb-2 text-sm sm:text-base">Improvements</h4>
+                                <ul className="text-orange-700 text-xs sm:text-sm space-y-1">
+                                    {feedback.improvements.filter(i => i).map((improvement, idx) => (
+                                        <li key={idx}>• {improvement}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        {feedback.suggestion && (
+                            <div className="bg-blue-50 border border-blue-200 p-3 sm:p-4 rounded-lg mb-3 sm:mb-4">
+                                <h4 className="font-medium text-blue-800 mb-2 text-sm sm:text-base">Suggestion</h4>
+                                <p className="text-blue-700 text-xs sm:text-sm">{feedback.suggestion}</p>
+                            </div>
+                        )}
+                        
+                        <button
+                            onClick={nextQuestion}
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 sm:py-3 px-4 rounded-lg font-medium transition-colors text-sm sm:text-base"
+                        >
+                            Next Question
+                        </button>
+                    </div>
+                )}
+            </div>
+
+            {/* Chat Sidebar - Hidden on mobile unless opened */}
+            {showChat && (
+                <div className="absolute inset-0 sm:relative sm:w-80 bg-white border-l border-gray-200 flex flex-col z-50 sm:z-auto">
+                    <div className="p-3 sm:p-4 border-b border-gray-200 flex items-center justify-between">
+                        <h3 className="text-gray-800 font-medium text-sm sm:text-base">Transcription</h3>
+                        <button
+                            onClick={() => setShowChat(false)}
+                            className="sm:hidden p-1 text-gray-500 hover:text-gray-800"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
+                    <div className="flex-1 p-3 sm:p-4 overflow-auto">
+                        <div className="space-y-2 text-xs sm:text-sm">
+                            <div className="text-gray-500">Session transcript will appear here...</div>
+                            {currentTranscript && (
+                                <div className="bg-gray-50 border border-gray-200 p-2 sm:p-3 rounded">
+                                    <div className="text-gray-800">{currentTranscript}</div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+
+        {/* Bottom Controls - Mobile optimized */}
+        <div className="bg-white border-t border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex justify-center flex-shrink-0">
+            <div className="flex items-center space-x-3 sm:space-x-4">
+                <button
+                    onClick={() => setMicEnabled(!micEnabled)}
+                    className={`p-2.5 sm:p-3 rounded-full transition-colors ${
+                        micEnabled 
+                            ? 'bg-gray-100 hover:bg-gray-200 text-gray-700' 
+                            : 'bg-red-600 hover:bg-red-700 text-white'
+                    }`}
+                    title={micEnabled ? 'Mute microphone' : 'Unmute microphone'}
+                >
+                    {micEnabled ? <Mic className="w-4 h-4 sm:w-5 sm:h-5" /> : <MicOff className="w-4 h-4 sm:w-5 sm:h-5" />}
+                </button>
+                
+                <button
+                    onClick={handleVideoToggle}
+                    className={`p-2.5 sm:p-3 rounded-full transition-colors ${
+                        videoEnabled && cameraEnabled && cameraStream
+                            ? 'bg-gray-100 hover:bg-gray-200 text-gray-700' 
+                            : 'bg-red-600 hover:bg-red-700 text-white'
+                    }`}
+                    title={videoEnabled ? 'Turn off camera' : 'Turn on camera'}
+                >
+                    {videoEnabled && cameraEnabled && cameraStream ? (
+                        <Video className="w-4 h-4 sm:w-5 sm:h-5" />
+                    ) : (
+                        <VideoOff className="w-4 h-4 sm:w-5 sm:h-5" />
+                    )}
+                </button>
+
+                <button
+                    onClick={endSession}
+                    className="p-2.5 sm:p-3 bg-red-600 hover:bg-red-700 text-white rounded-full transition-colors"
+                    title="End interview"
+                >
+                    <PhoneOff className="w-4 h-4 sm:w-5 sm:h-5" />
+                </button>
+            </div>
+        </div>
+
+        {/* Error Display - Mobile optimized */}
+        {error && (
+            <div className="fixed bottom-16 sm:bottom-4 left-2 right-2 sm:left-auto sm:right-4 sm:max-w-md bg-red-600 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-lg shadow-lg z-50">
+                <div className="text-xs sm:text-sm font-medium">Error:</div>
+                <div className="text-xs">{error}</div>
+            </div>
+        )}
+
+        {/* Camera Permission Modal - Mobile optimized */}
+        {cameraError && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-xl p-4 sm:p-6 max-w-md mx-auto">
+                    <div className="text-center">
+                        <Camera className="w-10 h-10 sm:w-12 sm:h-12 text-gray-500 mx-auto mb-3 sm:mb-4" />
+                        <h3 className="text-gray-800 font-medium mb-2 text-sm sm:text-base">Camera Access Required</h3>
+                        <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4">
+                            Please allow camera access for a realistic interview experience.
+                        </p>
+                        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+                            <button
+                                onClick={startCamera}
+                                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 sm:px-4 rounded-lg text-xs sm:text-sm"
+                            >
+                                Allow Camera
+                            </button>
                             <button
                                 onClick={() => {
                                     setCameraError('');
-                                    startCamera();
+                                    setCameraEnabled(false);
                                 }}
-                                className="mt-3 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded"
+                                className="flex-1 bg-gray-400 hover:bg-gray-500 text-white py-2 px-3 sm:px-4 rounded-lg text-xs sm:text-sm"
                             >
-                                Retry Camera
+                                Continue Without
                             </button>
-                        </>
-                    ) : (
-                        <>
-                            <div className={`w-24 h-24 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 ${isListening ? 'ring-4 ring-red-400 animate-pulse' : ''}`}>
-                                <span className="text-2xl font-bold text-white">ME</span>
-                            </div>
-                            <h3 className="text-gray-800 font-medium">You</h3>
-                            <p className="text-gray-500 text-sm mt-1">
-                                {isListening ? `Speaking... ${formatTime(speakingDuration)}` : 'Ready'}
-                            </p>
-                            {!videoEnabled && (
-                                <p className="text-gray-400 text-xs mt-2">Camera Off</p>
-                            )}
-                        </>
-                    )}
-                  </div>
+                        </div>
+                    </div>
                 </div>
-              )}
-              
-              <div className="absolute bottom-4 left-4">
-                <span className="bg-black bg-opacity-75 text-white px-2 py-1 rounded text-sm">
-                  You {isTranscribing && '🎤'} {cameraEnabled && videoEnabled && cameraStream && '📹'}
-                </span>
-              </div>
             </div>
-          </div>
-
-          {/* Question Display */}
-          <div className="mt-4 bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-gray-800 font-medium">Current Question</h3>
-              {loading && (
-                <div className="flex items-center text-blue-600">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse mr-2"></div>
-                  <span className="text-sm">Generating...</span>
-                </div>
-              )}
-            </div>
-            <div className="bg-gray-50 border border-gray-100 rounded-lg p-4">
-              <p className="text-gray-800 text-lg leading-relaxed">
-                {currentQuestion || 'Preparing your question...'}
-              </p>
-            </div>
-          </div>
-
-          {/* Real-time Transcription */}
-          {(isTranscribing || currentTranscript || interimTranscript) && (
-            <div className="mt-4 bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
-              <h3 className="text-gray-800 font-medium mb-4 flex items-center">
-                <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse mr-2"></span>
-                Live Transcription
-              </h3>
-              <div className="bg-gray-50 border border-gray-100 rounded-lg p-4 min-h-[80px]">
-                <p className="text-gray-800">
-                  {currentTranscript}
-                  <span className="text-gray-500 italic">
-                    {interimTranscript && ` ${interimTranscript}`}
-                  </span>
-                  {isTranscribing && <span className="animate-pulse">|</span>}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Answer Input */}
-          <div className="mt-4 bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
-            <h3 className="text-gray-800 font-medium mb-4">Your Response</h3>
-            <textarea
-              ref={textareaRef}
-              value={userAnswer}
-              onChange={(e) => setUserAnswer(e.target.value)}
-              placeholder="Type your answer here or use voice input..."
-              className="w-full h-32 p-4 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
-              disabled={isListening}
-            />
-            <div className="flex justify-between items-center mt-3">
-              <span className="text-gray-500 text-sm">
-                {userAnswer.length} characters • Total speaking: {formatTime(totalSpeakingTime)}
-              </span>
-              <div className="flex space-x-2">
-                <button
-                  onClick={isListening ? stopListening : startListening}
-                  disabled={loading || !currentQuestion}
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 ${
-                    isListening 
-                      ? 'bg-red-600 hover:bg-red-700 text-white' 
-                      : 'bg-blue-600 hover:bg-blue-700 text-white'
-                  }`}
-                >
-                  {isListening ? `Stop (${formatTime(speakingDuration)})` : 'Voice Input'}
-                </button>
-                <button
-                  onClick={submitAnswer}
-                  disabled={!userAnswer.trim() || loading}
-                  className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition-colors"
-                >
-                  {loading ? 'Evaluating...' : 'Submit'}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Feedback */}
-          {feedback && (
-            <div className="mt-4 bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-gray-800 font-medium">AI Feedback</h3>
-                <div className="flex items-center">
-                  <span className="text-2xl font-bold text-green-600">{feedback.score}/10</span>
-                </div>
-              </div>
-              
-              <div className="grid md:grid-cols-2 gap-4 mb-4">
-                <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
-                  <h4 className="font-medium text-green-800 mb-2">Strengths</h4>
-                  <ul className="text-green-700 text-sm space-y-1">
-                    {feedback.strengths.filter(s => s).map((strength, idx) => (
-                      <li key={idx}>• {strength}</li>
-                    ))}
-                  </ul>
-                </div>
-                
-                <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
-                  <h4 className="font-medium text-orange-800 mb-2">Improvements</h4>
-                  <ul className="text-orange-700 text-sm space-y-1">
-                    {feedback.improvements.filter(i => i).map((improvement, idx) => (
-                      <li key={idx}>• {improvement}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              
-              {feedback.suggestion && (
-                <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg mb-4">
-                  <h4 className="font-medium text-blue-800 mb-2">Suggestion</h4>
-                  <p className="text-blue-700 text-sm">{feedback.suggestion}</p>
-                </div>
-              )}
-              
-              <button
-                onClick={nextQuestion}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition-colors"
-              >
-                Next Question
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Chat Sidebar */}
-        {showChat && (
-          <div className="w-80 bg-white border-l border-gray-200 flex flex-col">
-            <div className="p-4 border-b border-gray-200">
-              <h3 className="text-gray-800 font-medium">Transcription History</h3>
-            </div>
-            <div className="flex-1 p-4 overflow-auto">
-              <div className="space-y-2 text-sm">
-                <div className="text-gray-500">Session transcript will appear here...</div>
-                {currentTranscript && (
-                  <div className="bg-gray-50 border border-gray-200 p-3 rounded">
-                    <div className="text-gray-800">{currentTranscript}</div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
         )}
-      </div>
-
-      {/* Bottom Controls - Enhanced */}
-      <div className="bg-white border-t border-gray-200 px-6 py-4 flex justify-center flex-shrink-0">
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={() => setMicEnabled(!micEnabled)}
-            className={`p-3 rounded-full transition-colors ${
-              micEnabled 
-                ? 'bg-gray-100 hover:bg-gray-200 text-gray-700' 
-                : 'bg-red-600 hover:bg-red-700 text-white'
-            }`}
-            title={micEnabled ? 'Mute microphone' : 'Unmute microphone'}
-          >
-            {micEnabled ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
-          </button>
-          
-          <button
-            onClick={handleVideoToggle}
-            className={`p-3 rounded-full transition-colors ${
-              videoEnabled && cameraEnabled && cameraStream
-                ? 'bg-gray-100 hover:bg-gray-200 text-gray-700' 
-                : 'bg-red-600 hover:bg-red-700 text-white'
-            }`}
-            title={videoEnabled ? 'Turn off camera' : 'Turn on camera'}
-          >
-            {videoEnabled && cameraEnabled && cameraStream ? (
-              <Video className="w-5 h-5" />
-            ) : (
-              <VideoOff className="w-5 h-5" />
-            )}
-          </button>
-
-          {/* Camera Settings */}
-          {cameraEnabled && (
-            <button
-              onClick={toggleCamera}
-              className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
-              title="Camera settings"
-            >
-              <Camera className="w-5 h-5" />
-            </button>
-          )}
-
-          <button
-            onClick={endSession}
-            className="p-3 bg-red-600 hover:bg-red-700 text-white rounded-full transition-colors"
-            title="End interview"
-          >
-            <PhoneOff className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-
-      {/* Error Display - More specific */}
-      {error && (
-        <div className="fixed bottom-4 right-4 bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 max-w-md">
-          <div className="text-sm font-medium">Error:</div>
-          <div className="text-xs">{error}</div>
-        </div>
-      )}
-
-      {/* Camera Permission Modal */}
-      {cameraError && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 max-w-md mx-4">
-            <div className="text-center">
-              <Camera className="w-12 h-12 text-gray-500 mx-auto mb-4" />
-              <h3 className="text-gray-800 font-medium mb-2">Camera Access Required</h3>
-              <p className="text-gray-600 text-sm mb-4">
-                To provide a realistic interview experience, please allow camera access. 
-                You can continue without camera if needed.
-              </p>
-              <div className="flex space-x-3">
-                <button
-                  onClick={startCamera}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm"
-                >
-                  Allow Camera
-                </button>
-                <button
-                  onClick={() => {
-                    setCameraError('');
-                    setCameraEnabled(false);
-                  }}
-                  className="flex-1 bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-lg text-sm"
-                >
-                  Continue Without
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
 export default InterviewSimulation;
+             

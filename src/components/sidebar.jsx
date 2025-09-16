@@ -21,7 +21,7 @@ const Sidebar = ({
   onLogout 
 }) => {
   return (
-    <div className={`${collapsed ? 'w-20' : 'w-72'} glass-card border-r transition-all duration-300 flex flex-col`}>
+    <div className={`hidden lg:flex ${collapsed ? 'w-20' : 'w-72'} glass-card border-r transition-all duration-300 flex-col`}>
       {/* Header */}
       <div className="p-6 border-b border-slate-200/50">
         <div className="flex items-center justify-between">
@@ -51,7 +51,7 @@ const Sidebar = ({
             key={item.id}
             className={`w-full flex items-center gap-3 p-3 mb-2 rounded-xl transition-all ${
               activeRoute === item.id 
-                ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg' 
+                ? 'bg-gradient-to-r from-blue-500 to-purple-blue text-white shadow-lg' 
                 : 'hover:bg-blue-50 text-slate-600'
             } ${item.isPremium && !userStatus?.isPremium ? 'opacity-60' : ''}`}
             onClick={() => onNavigation(item)}

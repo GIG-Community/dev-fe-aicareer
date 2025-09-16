@@ -1,4 +1,4 @@
-import { BrainCircuit, Globe2, BookOpenCheck, RocketIcon, Sparkles, Mail, Phone, MapPin, Twitter, Linkedin, Github, Instagram } from "lucide-react";
+import { BrainCircuit, Globe2, BookOpenCheck, RocketIcon, Sparkles, Mail, Phone, MapPin, Twitter, Linkedin, Github, Instagram, Globe } from "lucide-react";
 import { createElement } from "react";
 
 export default function Footer() {
@@ -34,10 +34,8 @@ export default function Footer() {
   ];
 
   const socialLinks = [
-    { name: "Twitter", icon: Twitter, href: "#twitter" },
-    { name: "LinkedIn", icon: Linkedin, href: "#linkedin" },
-    { name: "GitHub", icon: Github, href: "#github" },
-    { name: "Instagram", icon: Instagram, href: "#instagram" },
+    { name: "Linktree", icon: Globe, href: "linktr.ee/aicareer_id" },
+    { name: "Instagram", icon: Instagram, href: "https://www.instagram.com/aicareer_id/" },
   ];
 
   return createElement('footer', { className: "relative py-12 bg-slate-50/80 backdrop-blur-sm border-t border-blue-200/30" },
@@ -78,11 +76,30 @@ export default function Footer() {
               ),
               createElement('div', { className: "flex items-center space-x-3 text-slate-600" },
                 createElement(Phone, { className: "w-4 h-4 text-blue-500" }),
-                createElement('span', { className: "text-sm" }, "+62 21 1234 5678")
+                createElement('span', { className: "text-sm" }, "+62 857-2762-7146 (Dian Kusumawati)")
               ),
               createElement('div', { className: "flex items-center space-x-3 text-slate-600" },
                 createElement(MapPin, { className: "w-4 h-4 text-blue-500" }),
                 createElement('span', { className: "text-sm" }, "Surabaya, Indonesia")
+              )
+            ),
+
+            // Social Media Section - Made more prominent
+            createElement('div', { className: "mt-6" },
+              createElement('h4', { className: "text-sm font-semibold text-slate-800 mb-3" }, "Follow Us"),
+              createElement('div', { className: "flex items-center space-x-3" },
+                ...socialLinks.map((social, index) =>
+                  createElement('a', { 
+                    key: index, 
+                    href: social.href,
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    className: "flex items-center space-x-2 px-3 py-2 rounded-lg bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 hover:text-blue-800 transition-all duration-300 text-sm font-medium" 
+                  },
+                    createElement(social.icon, { className: "w-4 h-4" }),
+                    createElement('span', null, social.name)
+                  )
+                )
               )
             )
           ),
@@ -124,18 +141,10 @@ export default function Footer() {
           )
         ),
 
-        // Bottom Section with Social Links
+        // Bottom Section - Simplified
         createElement('div', { className: "mt-8 pt-6 border-t border-blue-200/30 flex justify-center" },
-          createElement('div', { className: "flex items-center space-x-4" },
-            ...socialLinks.map((social, index) =>
-              createElement('a', { 
-                key: index, 
-                href: social.href, 
-                className: "w-8 h-8 rounded-lg bg-white/50 border border-blue-200/30 flex items-center justify-center text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300" 
-              },
-                createElement(social.icon, { className: "w-4 h-4" })
-              )
-            )
+          createElement('div', { className: "text-center text-sm text-slate-500" },
+            "© 2024 Aicareer. All rights reserved."
           )
         )
       )
