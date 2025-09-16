@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Mic, MicOff, VideoOff, Video, PhoneOff, Settings, MessageCircle, Clock, Maximize2, Camera } from 'lucide-react';
+import { Mic, MicOff, VideoOff, Video, PhoneOff, Settings, MessageCircle, Clock, Maximize2, Camera, Upload, X, FileText, Trash2, CheckCircle, User } from 'lucide-react';
 import geminiService from '../../../services/geminiService';
 import audioService from '../../../services/audioService';
+import documentService from '../../../services/documentService';
 
 const InterviewSimulation = ({ onEnd }) => {
   // Setup states
@@ -10,6 +11,14 @@ const InterviewSimulation = ({ onEnd }) => {
   const [language, setLanguage] = useState('en');
   const [difficulty, setDifficulty] = useState('medium');
   const [interviewType, setInterviewType] = useState('normal');
+  const [voiceGender, setVoiceGender] = useState('female');
+
+  // Document upload states
+  const [uploadedDocuments, setUploadedDocuments] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const [documentAnalysis, setDocumentAnalysis] = useState(null);
+  const [interviewInsights, setInterviewInsights] = useState(null);
 
   // Session states
   const [currentQuestion, setCurrentQuestion] = useState('');
@@ -42,6 +51,7 @@ const InterviewSimulation = ({ onEnd }) => {
   const speakingTimerRef = useRef(null);
   const videoRef = useRef(null);
   const userVideoRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const languages = [
     { 
@@ -49,36 +59,15 @@ const InterviewSimulation = ({ onEnd }) => {
       name: 'English', 
       flag: '🇺🇸',
       nativeName: 'English',
-      sample: 'Tell me about yourself.'
+      sample: 'Tell me about yourself and your experience.'
     },
     { 
       code: 'id', 
       name: 'Bahasa Indonesia', 
       flag: '🇮🇩',
       nativeName: 'Bahasa Indonesia',
-      sample: 'Ceritakan tentang diri Anda.'
-    },
-    { 
-      code: 'zh', 
-      name: '中文', 
-      flag: '🇨🇳',
-      nativeName: '中文 (简体)',
-      sample: '请介绍一下自己。'
-    },
-    { 
-      code: 'ja', 
-      name: '日本語', 
-      flag: '🇯🇵',
-      nativeName: '日本語',
-      sample: '自己紹介をしてください。'
-    },
-    { 
-      code: 'ar', 
-      name: 'العربية', 
-      flag: '🇸🇦',
-      nativeName: 'العربية',
-      sample: 'أخبرني عن نفسك.'
-    },
+      sample: 'Ceritakan tentang diri Anda dan pengalaman Anda.'
+    }
   ];
 
   const jobRoles = [
@@ -172,6 +161,7 @@ const InterviewSimulation = ({ onEnd }) => {
   useEffect(() => {
     if (setupComplete && sessionStarted) {
       audioService.setLanguage(language);
+      audioService.setVoiceGender(voiceGender);
       generateNewQuestion();
     }
   }, [sessionStarted, setupComplete]);
@@ -198,12 +188,13 @@ const InterviewSimulation = ({ onEnd }) => {
           await audioService.speak(question, language);
         } catch (err) {
           console.log('Speech synthesis failed:', err);
+          setError(`Speech synthesis not available for ${language}. Please read the question above.`);
         }
         setIsSpeaking(false);
       }, 1000);
       
     } catch (err) {
-      setError('Failed to generate question. Please try again.');
+      setError(`Cannot generate questions: ${err.message}`);
       console.error(err);
       setIsSpeaking(false);
     }
@@ -285,11 +276,18 @@ const InterviewSimulation = ({ onEnd }) => {
     if (!userAnswer.trim()) return;
 
     setLoading(true);
+    setError('');
+    
     try {
       const evaluation = await geminiService.evaluateAnswer(userAnswer, currentQuestion, jobRole, language);
-      setFeedback(evaluation);
+      
+      if (evaluation) {
+        setFeedback(evaluation);
+      } else {
+        setError('Unable to evaluate answer: API response could not be parsed properly. Your answer has been recorded.');
+      }
     } catch (err) {
-      setError('Failed to evaluate answer.');
+      setError(`Evaluation failed: ${err.message}. Your answer has been recorded.`);
     }
     setLoading(false);
   };
@@ -379,270 +377,436 @@ const InterviewSimulation = ({ onEnd }) => {
     }
   };
 
-  // Setup View - Enhanced with Camera Preview
+  const analyzeDocuments = async () => {
+    try {
+      const analysis = await documentService.analyzeDocuments();
+      
+      if (!analysis) {
+        setUploadError('No documents available for analysis');
+        return;
+      }
+
+      if (analysis.skills.length === 0 && analysis.experience.length === 0) {
+        setUploadError('Could not extract meaningful information from uploaded documents. The text may be too short, unclear, or not in the expected CV format.');
+        setDocumentAnalysis(null);
+        return;
+      }
+
+      setDocumentAnalysis(analysis);
+      geminiService.setCandidateProfile(analysis);
+      
+      // Get interview insights based on RAG analysis
+      const insights = geminiService.getInterviewInsights();
+      setInterviewInsights(insights);
+      
+      console.log('Document analysis complete:', analysis?.summary);
+      console.log('Interview insights:', insights);
+      
+    } catch (error) {
+      console.error('Document analysis failed:', error);
+      setUploadError(`Document analysis failed: ${error.message}`);
+      setDocumentAnalysis(null);
+    }
+  };
+
+  // Update the upload section to provide better information about the ConvertAPI
+  const handleFileUpload = async (event) => {
+    const files = Array.from(event.target.files);
+    if (files.length === 0) return;
+
+    setIsUploading(true);
+    setUploadError('');
+
+    let successCount = 0;
+    let errors = [];
+
+    try {
+      for (const file of files) {
+        try {
+          const document = await documentService.uploadDocument(file);
+          setUploadedDocuments(prev => [...prev, document]);
+          successCount++;
+        } catch (fileError) {
+          console.error(`Failed to upload ${file.name}:`, fileError);
+          errors.push(`${file.name}: ${fileError.message}`);
+        }
+      }
+      
+      if (successCount > 0) {
+        await analyzeDocuments();
+      }
+      
+      if (errors.length > 0) {
+        setUploadError(`Some files failed to upload:\n${errors.join('\n')}`);
+      }
+      
+    } catch (error) {
+      setUploadError(`Upload failed: ${error.message}`);
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleVoiceGenderChange = (gender) => {
+    setVoiceGender(gender);
+    audioService.setVoiceGender(gender);
+  };
+
+  // Setup View - Enhanced with RAG insights
   if (!setupComplete) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-        <div className="glass-card rounded-xl shadow-xl p-8 w-full max-w-md">
-          <div className="text-center mb-8">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4 pt-20">
+        <div className="glass-card rounded-xl shadow-xl p-6 sm:p-8 w-full max-w-4xl">
+          <div className="text-center mb-6 sm:mb-8">
             <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
               <Video className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-2xl font-bold text-gray-800 mb-2">AI Interview Simulation</h2>
-            <p className="text-gray-600">Set up your interview session</p>
+            <p className="text-gray-600">Set up your personalized interview session</p>
           </div>
 
-          {/* Camera Preview */}
-          <div className="mb-6">
-            <div className="relative bg-gray-100 rounded-lg overflow-hidden h-32 flex items-center justify-center">
-              {cameraStream && cameraEnabled ? (
-                <video
-                  ref={userVideoRef}
-                  autoPlay
-                  muted
-                  playsInline
-                  className="w-full h-full object-cover"
-                  style={{ transform: 'scaleX(-1)' }}
-                  onLoadedMetadata={() => {
-                    if (userVideoRef.current) {
-                      userVideoRef.current.play().catch(console.error);
-                    }
-                  }}
-                />
-              ) : (
-                <div className="text-center">
-                  <Camera className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-500 text-sm">
-                    {cameraError ? 'Camera access denied' : 'Camera preview'}
-                  </p>
+          {/* Document Upload Section - Wider and more prominent */}
+          <div className="mb-8">
+            <label className="block text-base font-medium text-gray-700 mb-3">
+              Upload CV/Portfolio (Recommended for Personalized Experience)
+            </label>
+            
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 sm:p-8 text-center hover:border-blue-400 transition-colors bg-white bg-opacity-50">
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+              
+              <Upload className="w-10 h-10 text-blue-500 mx-auto mb-3" />
+              <p className="text-gray-700 mb-2 text-lg">
+                Drag and drop your CV or portfolio, or{' '}
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="text-blue-600 hover:text-blue-700 font-medium underline"
+                  disabled={isUploading}
+                >
+                  browse files
+                </button>
+              </p>
+              <p className="text-sm text-gray-500 max-w-lg mx-auto">
+                Supports PDF, DOC, DOCX, TXT, JPG, PNG (max 10MB each). 
+                PDF and DOC files will be automatically converted to text.
+              </p>
+              
+              {isUploading && (
+                <div className="mt-4 flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                  <span className="ml-2 text-blue-600">Uploading and analyzing...</span>
+                </div>
+              )}
+              
+              {uploadError && (
+                <div className="mt-4 text-sm text-red-600 bg-red-50 p-3 rounded max-w-lg mx-auto">
+                  {uploadError}
                 </div>
               )}
             </div>
-            <div className="flex justify-center mt-2">
-              <button
-                onClick={cameraEnabled ? () => {
-                  stopCamera();
-                  setCameraEnabled(false);
-                } : () => {
-                  setCameraEnabled(true);
-                  startCamera();
-                }}
-                className={`text-sm px-3 py-1 rounded ${
-                  cameraEnabled 
-                    ? 'bg-red-100 text-red-700 hover:bg-red-200' 
-                    : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                }`}
-              >
-                {cameraEnabled ? 'Disable Camera' : 'Enable Camera'}
-              </button>
-            </div>
-          </div>
 
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Interview Type</label>
-              <select
-                value={interviewType}
-                onChange={(e) => setInterviewType(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-              >
-                <option value="normal">Normal Interview</option>
-                <option value="technical">Technical Interview</option>
-                <option value="behavioral">Behavioral Interview</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Job Role</label>
-              <select
-                value={jobRole}
-                onChange={(e) => setJobRole(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white max-h-40 overflow-y-auto"
-              >
-                <optgroup label="Technology/IT">
-                  <option value="Software Developer">Software Developer</option>
-                  <option value="Full Stack Developer">Full Stack Developer</option>
-                  <option value="Frontend Developer">Frontend Developer</option>
-                  <option value="Backend Developer">Backend Developer</option>
-                  <option value="Mobile App Developer">Mobile App Developer</option>
-                  <option value="DevOps Engineer">DevOps Engineer</option>
-                  <option value="Cloud Architect">Cloud Architect</option>
-                  <option value="System Administrator">System Administrator</option>
-                  <option value="Cybersecurity Specialist">Cybersecurity Specialist</option>
-                  <option value="Software Architect">Software Architect</option>
-                  <option value="Technical Lead">Technical Lead</option>
-                  <option value="Quality Assurance Engineer">Quality Assurance Engineer</option>
-                </optgroup>
-                
-                <optgroup label="Data Science/Analytics">
-                  <option value="Data Scientist">Data Scientist</option>
-                  <option value="Data Analyst">Data Analyst</option>
-                  <option value="Machine Learning Engineer">Machine Learning Engineer</option>
-                  <option value="AI Engineer">AI Engineer</option>
-                  <option value="Business Intelligence Analyst">Business Intelligence Analyst</option>
-                  <option value="Data Engineer">Data Engineer</option>
-                  <option value="Research Scientist">Research Scientist</option>
-                </optgroup>
-                
-                <optgroup label="Digital Marketing">
-                  <option value="Digital Marketing Manager">Digital Marketing Manager</option>
-                  <option value="Social Media Manager">Social Media Manager</option>
-                  <option value="SEO Specialist">SEO Specialist</option>
-                  <option value="Content Marketing Manager">Content Marketing Manager</option>
-                  <option value="Performance Marketing Manager">Performance Marketing Manager</option>
-                  <option value="Email Marketing Specialist">Email Marketing Specialist</option>
-                  <option value="Growth Hacker">Growth Hacker</option>
-                  <option value="Digital Advertising Manager">Digital Advertising Manager</option>
-                </optgroup>
-                
-                <optgroup label="Product Management">
-                  <option value="Product Manager">Product Manager</option>
-                  <option value="Product Owner">Product Owner</option>
-                  <option value="Technical Product Manager">Technical Product Manager</option>
-                  <option value="Product Marketing Manager">Product Marketing Manager</option>
-                  <option value="Product Designer">Product Designer</option>
-                </optgroup>
-                
-                <optgroup label="Visual Design">
-                  <option value="UI/UX Designer">UI/UX Designer</option>
-                  <option value="Graphic Designer">Graphic Designer</option>
-                  <option value="Web Designer">Web Designer</option>
-                  <option value="Motion Graphics Designer">Motion Graphics Designer</option>
-                  <option value="Brand Designer">Brand Designer</option>
-                  <option value="Creative Director">Creative Director</option>
-                </optgroup>
-                
-                <optgroup label="E-commerce">
-                  <option value="E-commerce Manager">E-commerce Manager</option>
-                  <option value="Marketplace Manager">Marketplace Manager</option>
-                  <option value="E-commerce Analyst">E-commerce Analyst</option>
-                  <option value="Digital Sales Manager">Digital Sales Manager</option>
-                </optgroup>
-                
-                <optgroup label="Finance/Fintech">
-                  <option value="Fintech Product Manager">Fintech Product Manager</option>
-                  <option value="Financial Analyst">Financial Analyst</option>
-                  <option value="Blockchain Developer">Blockchain Developer</option>
-                  <option value="Cryptocurrency Analyst">Cryptocurrency Analyst</option>
-                  <option value="Digital Payment Specialist">Digital Payment Specialist</option>
-                </optgroup>
-                
-                <optgroup label="Business Development">
-                  <option value="Business Development Manager">Business Development Manager</option>
-                  <option value="Partnership Manager">Partnership Manager</option>
-                  <option value="Sales Development Representative">Sales Development Representative</option>
-                  <option value="Account Manager">Account Manager</option>
-                </optgroup>
-                
-                <optgroup label="Consulting">
-                  <option value="IT Consultant">IT Consultant</option>
-                  <option value="Digital Transformation Consultant">Digital Transformation Consultant</option>
-                  <option value="Technology Consultant">Technology Consultant</option>
-                  <option value="Management Consultant">Management Consultant</option>
-                </optgroup>
-                
-                <optgroup label="Emerging Digital Roles">
-                  <option value="Content Creator">Content Creator</option>
-                  <option value="Community Manager">Community Manager</option>
-                  <option value="Digital Project Manager">Digital Project Manager</option>
-                  <option value="Scrum Master">Scrum Master</option>
-                  <option value="Agile Coach">Agile Coach</option>
-                  <option value="Technical Writer">Technical Writer</option>
-                  <option value="Game Developer">Game Developer</option>
-                  <option value="AR/VR Developer">AR/VR Developer</option>
-                  <option value="IoT Developer">IoT Developer</option>
-                  <option value="Automation Engineer">Automation Engineer</option>
-                </optgroup>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Language</label>
-              <div className="grid grid-cols-1 gap-3">
-                {languages.map((lang) => (
-                  <button
-                    key={lang.code}
-                    onClick={() => setLanguage(lang.code)}
-                    className={`relative p-4 border-2 rounded-lg text-left transition-all transform hover:scale-[1.02] ${
-                      language === lang.code
-                        ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-lg'
-                        : 'border-gray-300 hover:border-gray-400 bg-white hover:bg-gray-50'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <span className="text-2xl">{lang.flag}</span>
-                        <div>
-                          <div className="font-medium text-base">{lang.nativeName}</div>
-                          <div className="text-sm text-gray-500">{lang.name}</div>
+            {/* Uploaded Documents - Made more spacious */}
+            {uploadedDocuments.length > 0 && (
+              <div className="mt-6 space-y-3">
+                <h4 className="text-base font-medium text-gray-700">Uploaded Documents:</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {uploadedDocuments.map((doc) => (
+                    <div key={doc.id} className="flex flex-col bg-green-50 border border-green-200 rounded-lg p-3 sm:p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center overflow-hidden">
+                          <FileText className="w-5 h-5 text-green-600 mr-2 flex-shrink-0" />
+                          <span className="text-sm text-green-800 truncate">{doc.name}</span>
+                          <CheckCircle className="w-4 h-4 text-green-600 ml-2 flex-shrink-0" />
                         </div>
+                        <button
+                          onClick={() => documentService.removeDocument(doc.id)}
+                          className="text-red-500 hover:text-red-700 flex-shrink-0 ml-2"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
                       </div>
-                      {language === lang.code && (
-                        <div className="flex items-center space-x-2">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                          <span className="text-xs font-medium text-blue-600">Selected</span>
+                      {doc.processingMethod && (
+                        <div className="mt-1 text-xs text-green-700 italic">
+                          {doc.processingMethod}
                         </div>
                       )}
                     </div>
+                  ))}
+                </div>
+                
+                {/* Enhanced Document Analysis Summary - Wider and better organized */}
+                {documentAnalysis && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-5 mt-4">
+                    <h5 className="text-base font-medium text-blue-800 mb-3">📊 Analysis Results:</h5>
                     
-                    {/* Sample question preview */}
-                    {language === lang.code && (
-                      <div className="mt-3 pt-3 border-t border-blue-200">
-                        <div className="text-xs text-blue-600 font-medium mb-1">Sample Question:</div>
-                        <div className="text-sm text-blue-700 italic" dir={lang.code === 'ar' ? 'rtl' : 'ltr'}>
-                          "{lang.sample}"
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-3">
+                      <div className="bg-white rounded p-3">
+                        <div className="font-medium text-gray-700">Content Extracted</div>
+                        <div className="text-blue-700">Skills: {documentAnalysis.skills?.length || 0} found</div>
+                        <div className="text-blue-700">Experience: {documentAnalysis.experience?.length || 0} entries</div>
+                        <div className="text-blue-700">Projects: {documentAnalysis.projects?.length || 0} found</div>
+                      </div>
+                      <div className="bg-white rounded p-3">
+                        <div className="font-medium text-gray-700">Document Parsing</div>
+                        <div className="text-blue-700">Text Chunks: {documentAnalysis.chunks || 0}</div>
+                        <div className="text-blue-700">Total Words: {documentAnalysis.rawContent?.split(' ').length || 0}</div>
+                      </div>
+                    </div>
+
+                    {documentAnalysis.summary?.topKeywords && documentAnalysis.summary.topKeywords.length > 0 ? (
+                      <div className="bg-white rounded p-3 mb-3">
+                        <div className="font-medium text-gray-700 mb-1">🔍 Skills Detected in CV:</div>
+                        <div className="flex flex-wrap gap-1">
+                          {documentAnalysis.summary.topKeywords.map((keyword, index) => (
+                            <span key={index} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                              {keyword}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mb-3">
+                        <div className="text-yellow-800 text-xs">
+                          ⚠️ No technical skills detected in CV. Questions will be generic.
                         </div>
                       </div>
                     )}
-                  </button>
-                ))}
+
+                    {/* Interview Insights - Only show if available */}
+                    {interviewInsights ? (
+                      <div className="bg-white rounded p-3">
+                        <div className="font-medium text-gray-700 mb-2">🎯 Interview Assessment:</div>
+                        <div className="text-xs space-y-1">
+                          {interviewInsights.experienceLevel && (
+                            <div className="text-green-700">
+                              Experience Level: <span className="font-medium">{interviewInsights.experienceLevel}</span>
+                            </div>
+                          )}
+                          {interviewInsights.focusAreas && interviewInsights.focusAreas.length > 0 && (
+                            <div className="text-blue-700">
+                              Focus Areas: {interviewInsights.focusAreas.join(', ')}
+                            </div>
+                          )}
+                          {interviewInsights.strengths && interviewInsights.strengths.length > 0 && (
+                            <div className="text-purple-700">
+                              Key Strengths: {interviewInsights.strengths.join(', ')}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bg-gray-50 rounded p-3">
+                        <div className="text-gray-600 text-xs">
+                          ℹ️ Insufficient CV data for detailed insights. General questions will be used.
+                        </div>
+                      </div>
+                    )}
+                    
+                    <p className="text-xs text-blue-600 mt-3 font-medium">
+                      {documentAnalysis.skills?.length > 0 || documentAnalysis.experience?.length > 0 
+                        ? '✨ Questions will be personalized based on your CV content'
+                        : '⚠️ Questions will be generic due to insufficient CV information'
+                      }
+                    </p>
+                  </div>
+                )}
               </div>
-              
-              {/* Language preview section */}
-              {language && (
-                <div className="mt-4 p-4 bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg border border-gray-200">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <span className="text-lg">
-                      {languages.find(l => l.code === language)?.flag}
-                    </span>
-                    <span className="text-sm font-medium text-gray-700">
-                      Interview will be conducted in {languages.find(l => l.code === language)?.nativeName}
-                    </span>
-                  </div>
-                  <div className="text-xs text-gray-600">
-                    Questions and feedback will be provided in the selected language
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Difficulty</label>
-              <select
-                value={difficulty}
-                onChange={(e) => setDifficulty(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-              >
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-              </select>
-            </div>
-
-            <button
-              onClick={handleStartInterview}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-medium transition-colors mt-6"
-            >
-              Start Interview Simulation
-            </button>
+            )}
           </div>
+
+          {/* Rest of the setup screen content in two columns for better layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              {/* Camera Preview */}
+              <div className="mb-6">
+                <label className="block text-base font-medium text-gray-700 mb-2">Camera Preview</label>
+                <div className="relative bg-gray-100 rounded-lg overflow-hidden h-36 sm:h-48 flex items-center justify-center">
+                  {cameraStream && cameraEnabled ? (
+                    <video
+                      ref={userVideoRef}
+                      autoPlay
+                      muted
+                      playsInline
+                      className="w-full h-full object-cover"
+                      style={{ transform: 'scaleX(-1)' }}
+                      onLoadedMetadata={() => {
+                        if (userVideoRef.current) {
+                          userVideoRef.current.play().catch(console.error);
+                        }
+                      }}
+                    />
+                  ) : (
+                    <div className="text-center">
+                      <Camera className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                      <p className="text-gray-500 text-sm">
+                        {cameraError ? 'Camera access denied' : 'Camera preview'}
+                      </p>
+                    </div>
+                  )}
+                </div>
+                <div className="flex justify-center mt-2">
+                  <button
+                    onClick={cameraEnabled ? () => {
+                      stopCamera();
+                      setCameraEnabled(false);
+                    } : () => {
+                      setCameraEnabled(true);
+                      startCamera();
+                    }}
+                    className={`text-sm px-3 py-1 rounded ${
+                      cameraEnabled 
+                        ? 'bg-red-100 text-red-700 hover:bg-red-200' 
+                        : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                    }`}
+                  >
+                    {cameraEnabled ? 'Disable Camera' : 'Enable Camera'}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-base font-medium text-gray-700 mb-2">Interview Type</label>
+                <select
+                  value={interviewType}
+                  onChange={(e) => setInterviewType(e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                >
+                  <option value="normal">Normal Interview</option>
+                  <option value="technical">Technical Interview</option>
+                  <option value="behavioral">Behavioral Interview</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-base font-medium text-gray-700 mb-2">Job Role</label>
+                <select
+                  value={jobRole}
+                  onChange={(e) => setJobRole(e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white max-h-40 overflow-y-auto"
+                >
+                  {/* Simplified job roles list - you can include the full list from existing code */}
+                  <option value="Software Developer">Software Developer</option>
+                  <option value="Full Stack Developer">Full Stack Developer</option>
+                  <option value="Data Scientist">Data Scientist</option>
+                  <option value="Digital Marketing Manager">Digital Marketing Manager</option>
+                  <option value="UI/UX Designer">UI/UX Designer</option>
+                  <option value="Product Manager">Product Manager</option>
+                  {/* Add more as needed */}
+                </select>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-base font-medium text-gray-700 mb-2">Language</label>
+                <div className="grid grid-cols-1 gap-3">
+                  {languages.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => setLanguage(lang.code)}
+                      className={`relative p-4 border-2 rounded-lg text-left transition-all transform hover:scale-[1.02] ${
+                        language === lang.code
+                          ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-lg'
+                          : 'border-gray-300 hover:border-gray-400 bg-white hover:bg-gray-50'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <span className="text-2xl">{lang.flag}</span>
+                          <div>
+                            <div className="font-medium text-base">{lang.nativeName}</div>
+                            <div className="text-sm text-gray-500">{lang.name}</div>
+                          </div>
+                        </div>
+                        {language === lang.code && (
+                          <div className="flex items-center space-x-2">
+                            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                            <span className="text-xs font-medium text-blue-600">Selected</span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Sample question preview */}
+                      {language === lang.code && (
+                        <div className="mt-3 pt-3 border-t border-blue-200">
+                          <div className="text-xs text-blue-600 font-medium mb-1">Sample Question:</div>
+                          <div className="text-sm text-blue-700 italic">
+                            "{lang.sample}"
+                          </div>
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-base font-medium text-gray-700 mb-2">AI Interviewer Voice</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => handleVoiceGenderChange('female')}
+                    className={`p-3 border-2 rounded-lg text-center transition-all ${
+                      voiceGender === 'female'
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-300 hover:border-gray-400 bg-white'
+                    }`}
+                  >
+                    <User className="w-5 h-5 mx-auto mb-1" />
+                    <div className="text-sm font-medium">Female Voice</div>
+                    <div className="text-xs text-gray-500">Professional & Clear</div>
+                  </button>
+                  <button
+                    onClick={() => handleVoiceGenderChange('male')}
+                    className={`p-3 border-2 rounded-lg text-center transition-all ${
+                      voiceGender === 'male'
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-300 hover:border-gray-400 bg-white'
+                    }`}
+                  >
+                    <User className="w-5 h-5 mx-auto mb-1" />
+                    <div className="text-sm font-medium">Male Voice</div>
+                    <div className="text-xs text-gray-500">Authoritative & Warm</div>
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-base font-medium text-gray-700 mb-2">Difficulty</label>
+                <select
+                  value={difficulty}
+                  onChange={(e) => setDifficulty(e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                >
+                  <option value="easy">Easy</option>
+                  <option value="medium">Medium</option>
+                  <option value="hard">Hard</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={handleStartInterview}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-medium transition-colors mt-8"
+          >
+            Start Interview Simulation
+          </button>
         </div>
       </div>
     );
   }
 
   // Video Call Interface - Enhanced with Real Camera
-return (
+  return (
     <div className="fixed inset-0 h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex flex-col overflow-hidden z-50 pt-16">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center flex-shrink-0">
@@ -968,10 +1132,11 @@ return (
         </div>
       </div>
 
-      {/* Error Display */}
+      {/* Error Display - More specific */}
       {error && (
-        <div className="fixed bottom-4 right-4 bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg z-50">
-          {error}
+        <div className="fixed bottom-4 right-4 bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 max-w-md">
+          <div className="text-sm font-medium">Error:</div>
+          <div className="text-xs">{error}</div>
         </div>
       )}
 

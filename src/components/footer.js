@@ -7,6 +7,7 @@ export default function Footer() {
     { name: "Ainterview", icon: Globe2, description: "Multilingual Interview" },
     { name: "Aitest", icon: BookOpenCheck, description: "Technical Assessment" },
     { name: "Aiwork", icon: BrainCircuit, description: "Real-World Simulation" },
+    { name: "Aiproject", icon: BrainCircuit, description: "Create your real-world case project" },
   ];
 
   const companyLinks = [
@@ -73,7 +74,7 @@ export default function Footer() {
             createElement('div', { className: "space-y-2" },
               createElement('div', { className: "flex items-center space-x-3 text-slate-600" },
                 createElement(Mail, { className: "w-4 h-4 text-blue-500" }),
-                createElement('span', { className: "text-sm" }, "hello@aicareer.com")
+                createElement('span', { className: "text-sm" }, "hey.aicareer@gmailcom")
               ),
               createElement('div', { className: "flex items-center space-x-3 text-slate-600" },
                 createElement(Phone, { className: "w-4 h-4 text-blue-500" }),
@@ -81,7 +82,7 @@ export default function Footer() {
               ),
               createElement('div', { className: "flex items-center space-x-3 text-slate-600" },
                 createElement(MapPin, { className: "w-4 h-4 text-blue-500" }),
-                createElement('span', { className: "text-sm" }, "Jakarta, Indonesia")
+                createElement('span', { className: "text-sm" }, "Surabaya, Indonesia")
               )
             )
           ),

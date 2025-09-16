@@ -37,10 +37,18 @@ const Interview = ({ onEnd }) => {
   const [cameraStream, setCameraStream] = useState(null);
   const [cameraError, setCameraError] = useState('');
 
+  // Add new states for document upload and voice preferences
+  const [uploadedDocuments, setUploadedDocuments] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const [documentAnalysis, setDocumentAnalysis] = useState(null);
+  const [voiceGender, setVoiceGender] = useState('female');
+
   const textareaRef = useRef(null);
   const speakingTimerRef = useRef(null);
   const videoRef = useRef(null);
   const userVideoRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const languages = [
     { 
@@ -48,36 +56,15 @@ const Interview = ({ onEnd }) => {
       name: 'English', 
       flag: '🇺🇸',
       nativeName: 'English',
-      sample: 'Tell me about yourself.'
+      sample: 'Tell me about yourself and your experience.'
     },
     { 
       code: 'id', 
       name: 'Bahasa Indonesia', 
       flag: '🇮🇩',
       nativeName: 'Bahasa Indonesia',
-      sample: 'Ceritakan tentang diri Anda.'
-    },
-    { 
-      code: 'zh', 
-      name: '中文', 
-      flag: '🇨🇳',
-      nativeName: '中文 (简体)',
-      sample: '请介绍一下自己。'
-    },
-    { 
-      code: 'ja', 
-      name: '日本語', 
-      flag: '🇯🇵',
-      nativeName: '日本語',
-      sample: '自己紹介をしてください。'
-    },
-    { 
-      code: 'ar', 
-      name: 'العربية', 
-      flag: '🇸🇦',
-      nativeName: 'العربية',
-      sample: 'أخبرني عن نفسك.'
-    },
+      sample: 'Ceritakan tentang diri Anda dan pengalaman Anda.'
+    }
   ];
 
   const jobRoles = [
@@ -170,6 +157,7 @@ const Interview = ({ onEnd }) => {
   useEffect(() => {
     if (setupComplete && sessionStarted) {
       audioService.setLanguage(language);
+      audioService.setVoiceGender(voiceGender);
       generateNewQuestion();
     }
   }, [sessionStarted, setupComplete]);
@@ -380,17 +368,108 @@ const Interview = ({ onEnd }) => {
     }
   };
 
-  // Setup View - Enhanced with Camera Preview
+  // Document upload functions
+  const handleFileUpload = async (event) => {
+    const files = Array.from(event.target.files);
+    setIsUploading(true);
+    setUploadError('');
+    
+    try {
+      // Upload each file and update state
+      const newDocuments = await Promise.all(files.map(async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const response = await geminiService.uploadDocument(formData);
+        return response.data;
+      }));
+      
+      setUploadedDocuments(prev => [...prev, ...newDocuments]);
+      setIsUploading(false);
+    } catch (err) {
+      setUploadError('Failed to upload documents. Please try again.');
+      setIsUploading(false);
+    }
+  };
+
+  const analyzeDocuments = async () => {
+    setLoading(true);
+    setError('');
+    
+    try {
+      const analysis = await geminiService.analyzeDocuments(uploadedDocuments);
+      setDocumentAnalysis(analysis);
+    } catch (err) {
+      setError('Failed to analyze documents. Please try again.');
+    }
+    setLoading(false);
+  };
+
+  const removeDocument = (documentId) => {
+    setUploadedDocuments(prev => prev.filter(doc => doc.id !== documentId));
+  };
+
+  const handleVoiceGenderChange = (gender) => {
+    setVoiceGender(gender);
+    audioService.setVoiceGender(gender);
+  };
+
+  // Setup View - Update to include document upload and voice selection
   if (!setupComplete) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-        <div className="glass-card rounded-xl shadow-xl p-8 w-full max-w-md">
+        <div className="glass-card rounded-xl shadow-xl p-8 w-full max-w-2xl">
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
               <Video className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-2xl font-bold text-gray-800 mb-2">Join Interview</h2>
-            <p className="text-gray-600">Set up your interview session</p>
+            <p className="text-gray-600">Set up your personalized interview session</p>
+          </div>
+
+          {/* Document Upload Section - Same as interview-simulation */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Upload Your Documents</h3>
+            <input
+              type="file"
+              multiple
+              onChange={handleFileUpload}
+              className="hidden"
+              ref={fileInputRef}
+            />
+            <div className="flex flex-col space-y-4">
+              <button
+                onClick={() => fileInputRef.current.click()}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+              >
+                {isUploading ? 'Uploading...' : 'Upload Documents'}
+              </button>
+              
+              {uploadError && (
+                <div className="text-red-600 text-sm">
+                  {uploadError}
+                </div>
+              )}
+              
+              {uploadedDocuments.length > 0 && (
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <h4 className="font-medium text-gray-800 mb-2">Uploaded Documents</h4>
+                  <ul className="text-gray-700 text-sm space-y-1">
+                    {uploadedDocuments.map(doc => (
+                      <li key={doc.id} className="flex justify-between items-center">
+                        <span>{doc.name}</span>
+                        <button
+                          onClick={() => removeDocument(doc.id)}
+                          className="text-red-600 hover:underline"
+                        >
+                          Remove
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Camera Preview */}
@@ -602,6 +681,36 @@ const Interview = ({ onEnd }) => {
                   </div>
                 </div>
               )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Voice Gender</label>
+              <div className="flex space-x-4">
+                <button
+                  onClick={() => handleVoiceGenderChange('female')}
+                  className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
+                    voiceGender === 'female' 
+                      ? 'bg-blue-600 text-white shadow-md' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Female
+                </button>
+                <button
+                  onClick={() => handleVoiceGenderChange('male')}
+                  className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
+                    voiceGender === 'male' 
+                      ? 'bg-blue-600 text-white shadow-md' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Male
+                </button>
+              </div>
+              
+              <div className="mt-2 text-sm text-gray-500">
+                Selected voice gender will be used for question reading and feedback
+              </div>
             </div>
 
             <div>

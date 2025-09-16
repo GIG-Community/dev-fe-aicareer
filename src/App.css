@@ -29,27 +29,18 @@
 }
 
 .glass-card::before {
+  /* inert overlay: keep present but transparent to avoid the previous sliding overlay bug */
   content: '';
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(59, 130, 246, 0.15),
-    transparent
-  );
-  transition: left 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  inset: 0; /* top:0; right:0; bottom:0; left:0 */
+  background: transparent;
+  transition: opacity 0.2s ease;
   z-index: 1;
+  opacity: 0;
+  pointer-events: none;
 }
 
-.glass-card:hover::before {
-  left: 100%;
-}
-
-.glass-card-hover,
+/* No slide or reveal on hover */
 .glass-card:hover {
   background: linear-gradient(
     135deg,
@@ -440,29 +431,15 @@ button {
 }
 
 button::before {
+  /* disabled sliding sheen — inert transparent overlay */
   content: '';
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
-  transition: left 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  inset: 0;
+  background: transparent;
+  transition: none;
   z-index: 1;
-}
-
-button:hover::before {
-  left: 100%;
-}
-
-button:focus-visible {
-  outline: 2px solid rgba(59, 130, 246, 0.6);
-  outline-offset: 3px;
+  opacity: 0;
+  pointer-events: none;
   box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
 }
 
@@ -995,6 +972,25 @@ button:active {
   }
 }
 
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .glass-card {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+
+/* Light Mode Enhancements */
+@media (prefers-color-scheme: light) {
+  .glass-card {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.9) 0%,
+      rgba(219, 234, 254, 0.5) 100%
+    );
+  }
+}
 /* High Contrast Mode Support */
 @media (prefers-contrast: high) {
   .glass-card {

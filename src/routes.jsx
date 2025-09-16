@@ -8,6 +8,11 @@ import AitestPage from './pages/aitest/page';
 import AiworkPage from './pages/aiwork/page';
 import AiprojectPage from './pages/aiproject/page';
 import InterviewSimulation from './pages/ainterview/interview-simulation/page';
+import LoginPage from './pages/login/page';
+import RegisterPage from './pages/register/page';
+import PaymentPage from './pages/payment/page';
+import Dashboard from './pages/dashboard/page';
+import ProtectedRoute from './components/ProtectedRoute';
 
 export const router = createBrowserRouter([
   {
@@ -20,27 +25,67 @@ export const router = createBrowserRouter([
       },
       {
         path: '/aimprove',
-        element: createElement(AimprovePage)
+        element: createElement(ProtectedRoute, { 
+          children: createElement(AimprovePage),
+          requiresPremium: true 
+        })
       },
       {
         path: '/ainterview',
-        element: createElement(AinterviewPage)
+        element: createElement(ProtectedRoute, { 
+          children: createElement(AinterviewPage),
+          requiresPremium: true 
+        })
       },
       {
         path: '/aitest',
-        element: createElement(AitestPage)
+        element: createElement(ProtectedRoute, { 
+          children: createElement(AitestPage),
+          requiresPremium: true 
+        })
       },
       {
         path: '/aiwork',
-        element: createElement(AiworkPage)
+        element: createElement(ProtectedRoute, { 
+          children: createElement(AiworkPage),
+          requiresPremium: true 
+        })
       },
       {
         path: '/ainterview/interview-simulation',
-        element: createElement(InterviewSimulation)
+        element: createElement(ProtectedRoute, { 
+          children: createElement(InterviewSimulation),
+          requiresPremium: true 
+        })
       },
       {
         path: '/aiproject',
-        element: createElement(AiprojectPage)
+        element: createElement(ProtectedRoute, { 
+          children: createElement(AiprojectPage),
+          requiresPremium: true 
+        })
+      },
+      {
+        path: '/login',
+        element: createElement(LoginPage)
+      },
+      {
+        path: '/register',
+        element: createElement(RegisterPage)
+      },
+      {
+        path: '/payment',
+        element: createElement(ProtectedRoute, { 
+          children: createElement(PaymentPage),
+          requiresPremium: false 
+        })
+      },
+      {
+        path: '/dashboard',
+        element: createElement(ProtectedRoute, { 
+          children: createElement(Dashboard),
+          requiresPremium: false 
+        })
       }
     ]
   }

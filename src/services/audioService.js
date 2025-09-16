@@ -4,8 +4,11 @@ export class AudioService {
     this.synthesis = window.speechSynthesis;
     this.isListening = false;
     this.currentLanguage = 'en-US';
+    this.preferredVoice = null;
+    this.voiceGender = 'female'; // default
     
     this.initializeSpeechRecognition();
+    this.loadVoicePreferences();
   }
 
   initializeSpeechRecognition() {
@@ -22,13 +25,24 @@ export class AudioService {
     }
   }
 
+  loadVoicePreferences() {
+    // Load voice preferences from localStorage
+    const savedGender = localStorage.getItem('interview_voice_gender');
+    if (savedGender) {
+      this.voiceGender = savedGender;
+    }
+  }
+
+  setVoiceGender(gender) {
+    this.voiceGender = gender;
+    localStorage.setItem('interview_voice_gender', gender);
+    this.preferredVoice = null; // Reset to find new voice
+  }
+
   setLanguage(language) {
     const languageMap = {
       'en': 'en-US',
-      'id': 'id-ID', 
-      'zh': 'zh-CN',
-      'ja': 'ja-JP',
-      'ar': 'ar-SA'
+      'id': 'id-ID'
     };
     
     this.currentLanguage = languageMap[language] || 'en-US';
@@ -37,51 +51,155 @@ export class AudioService {
     if (this.recognition) {
       this.recognition.lang = this.currentLanguage;
     }
+    
+    // Reset preferred voice when language changes
+    this.preferredVoice = null;
   }
 
-  async startListening() {
-    return new Promise((resolve, reject) => {
-      if (!this.recognition) {
-        reject(new Error('Speech recognition not supported'));
-        return;
-      }
-
-      if (this.isListening) {
-        reject(new Error('Already listening'));
-        return;
-      }
-
-      this.isListening = true;
+  findBestVoice(language) {
+    const voices = this.synthesis.getVoices();
+    console.log('Available voices:', voices.map(v => `${v.name} (${v.lang}) - ${v.gender || 'unknown'}`));
+    
+    let candidateVoices = [];
+    
+    if (language === 'en') {
+      // English voice preferences with quality and natural-sounding criteria
+      const englishVariants = ['en-US', 'en-GB', 'en-AU', 'en-CA'];
       
-      this.recognition.onresult = (event) => {
-        const result = event.results[0][0].transcript;
-        this.isListening = false;
-        resolve(result);
-      };
-
-      this.recognition.onerror = (event) => {
-        this.isListening = false;
-        reject(new Error(`Speech recognition error: ${event.error}`));
-      };
-
-      this.recognition.onend = () => {
-        this.isListening = false;
-      };
-
-      try {
-        this.recognition.start();
-      } catch (error) {
-        this.isListening = false;
-        reject(error);
+      // High-quality English voices (prioritize natural-sounding names)
+      const preferredEnglishVoices = [
+        // US English - Female
+        'Samantha', 'Alex', 'Allison', 'Ava', 'Susan', 'Zoe', 'Microsoft Zira',
+        // US English - Male  
+        'Tom', 'Daniel', 'David', 'Microsoft David',
+        // UK English - Female
+        'Kate', 'Serena', 'Microsoft Hazel',
+        // UK English - Male
+        'Oliver', 'Microsoft George'
+      ];
+      
+      // First, try to find voices by preferred names
+      for (const voiceName of preferredEnglishVoices) {
+        const voice = voices.find(v => 
+          v.name.includes(voiceName) && 
+          englishVariants.some(variant => v.lang.startsWith(variant))
+        );
+        if (voice) {
+          const isPreferredGender = this.isVoiceGenderMatch(voice, this.voiceGender);
+          candidateVoices.push({
+            voice,
+            priority: isPreferredGender ? 10 : 5,
+            reason: `Preferred ${voiceName} voice`
+          });
+        }
       }
-    });
+      
+      // Then find by language and quality indicators
+      voices.forEach(voice => {
+        if (englishVariants.some(variant => voice.lang.startsWith(variant))) {
+          const isPreferredGender = this.isVoiceGenderMatch(voice, this.voiceGender);
+          const isHighQuality = this.isHighQualityVoice(voice);
+          
+          let priority = 1;
+          if (isPreferredGender) priority += 3;
+          if (isHighQuality) priority += 2;
+          if (voice.lang === 'en-US') priority += 1;
+          
+          candidateVoices.push({
+            voice,
+            priority,
+            reason: `${voice.name} (${voice.lang})`
+          });
+        }
+      });
+    } 
+    else if (language === 'id') {
+      // Indonesian voice preferences
+      const indonesianVariants = ['id-ID', 'id'];
+      
+      // Preferred Indonesian voices
+      const preferredIndonesianVoices = [
+        'Damayanti', 'Andika', 'Microsoft Andika'
+      ];
+      
+      // First, try preferred names
+      for (const voiceName of preferredIndonesianVoices) {
+        const voice = voices.find(v => 
+          v.name.includes(voiceName) && 
+          indonesianVariants.some(variant => v.lang.startsWith(variant))
+        );
+        if (voice) {
+          const isPreferredGender = this.isVoiceGenderMatch(voice, this.voiceGender);
+          candidateVoices.push({
+            voice,
+            priority: isPreferredGender ? 10 : 7,
+            reason: `Preferred Indonesian voice: ${voiceName}`
+          });
+        }
+      }
+      
+      // Then find any Indonesian voices
+      voices.forEach(voice => {
+        if (indonesianVariants.some(variant => voice.lang.startsWith(variant))) {
+          const isPreferredGender = this.isVoiceGenderMatch(voice, this.voiceGender);
+          const isHighQuality = this.isHighQualityVoice(voice);
+          
+          let priority = 1;
+          if (isPreferredGender) priority += 3;
+          if (isHighQuality) priority += 2;
+          
+          candidateVoices.push({
+            voice,
+            priority,
+            reason: `Indonesian voice: ${voice.name}`
+          });
+        }
+      });
+    }
+    
+    // Sort by priority and return the best voice
+    candidateVoices.sort((a, b) => b.priority - a.priority);
+    
+    if (candidateVoices.length > 0) {
+      const bestVoice = candidateVoices[0];
+      console.log(`Selected voice: ${bestVoice.voice.name} (${bestVoice.voice.lang}) - Priority: ${bestVoice.priority}, Reason: ${bestVoice.reason}`);
+      return bestVoice.voice;
+    }
+    
+    console.warn(`No suitable voice found for language ${language}`);
+    return null;
   }
 
-  stopListening() {
-    if (this.recognition && this.isListening) {
-      this.recognition.stop();
-      this.isListening = false;
+  isVoiceGenderMatch(voice, preferredGender) {
+    // Check voice name patterns for gender indication
+    const femalePatterns = [
+      'samantha', 'allison', 'ava', 'susan', 'zoe', 'zira', 'kate', 'serena', 'hazel',
+      'damayanti', 'sari', 'female', 'woman'
+    ];
+    
+    const malePatterns = [
+      'tom', 'daniel', 'david', 'oliver', 'george', 'andika', 'male', 'man'
+    ];
+    
+    const voiceName = voice.name.toLowerCase();
+    
+    if (preferredGender === 'female') {
+      return femalePatterns.some(pattern => voiceName.includes(pattern));
+    } else if (preferredGender === 'male') {
+      return malePatterns.some(pattern => voiceName.includes(pattern));
     }
+    
+    return true; // If no preference or can't determine, consider it a match
+  }
+
+  isHighQualityVoice(voice) {
+    // Indicators of high-quality voices
+    const highQualityIndicators = [
+      'premium', 'enhanced', 'neural', 'natural', 'microsoft', 'google', 'apple'
+    ];
+    
+    const voiceName = voice.name.toLowerCase();
+    return highQualityIndicators.some(indicator => voiceName.includes(indicator));
   }
 
   speak(text, language = 'en') {
@@ -96,92 +214,33 @@ export class AudioService {
 
       const utterance = new SpeechSynthesisUtterance(text);
       
-      // Set voice based on language with better fallback
-      const targetLang = this.getVoiceLanguage(language);
-      console.log(`Looking for voice for language: ${targetLang}, original language: ${language}`);
+      console.log(`Speaking in ${language} with ${this.voiceGender} voice preference`);
       
       // Wait for voices to load if needed
       const setVoiceAndSpeak = () => {
-        const voices = this.synthesis.getVoices();
-        console.log('Available voices:', voices.map(v => `${v.name} (${v.lang})`));
-        
-        let voice = null;
-        
-        // Special handling for Arabic
-        if (language === 'ar') {
-          // Try multiple Arabic variants in order of preference
-          const arabicVariants = [
-            'ar-SA', 'ar-EG', 'ar-AE', 'ar-MA', 'ar-JO', 'ar-LB', 'ar-SY', 'ar-IQ', 'ar-KW', 'ar'
-          ];
-          
-          for (const variant of arabicVariants) {
-            voice = voices.find(v => 
-              v.lang === variant || 
-              v.lang.startsWith(variant) ||
-              (v.name.toLowerCase().includes('arabic') && v.lang.startsWith('ar'))
-            );
-            if (voice) {
-              console.log(`Found Arabic voice: ${voice.name} (${voice.lang})`);
-              break;
-            }
-          }
-          
-          // If still no Arabic voice found, try any voice with 'arabic' in name
-          if (!voice) {
-            voice = voices.find(v => 
-              v.name.toLowerCase().includes('arabic') ||
-              v.name.toLowerCase().includes('عربي') ||
-              v.lang.includes('ar')
-            );
-          }
-        }
-        // Special handling for Chinese
-        else if (language === 'zh') {
-          const chineseVariants = [
-            'zh-CN', 'zh-TW', 'zh-HK', 'zh-SG', 'zh'
-          ];
-          
-          for (const variant of chineseVariants) {
-            voice = voices.find(v => 
-              v.lang === variant || 
-              v.lang.startsWith(variant) ||
-              (v.name.toLowerCase().includes('chinese') && v.lang.startsWith('zh'))
-            );
-            if (voice) break;
-          }
-        }
-        // Special handling for Japanese
-        else if (language === 'ja') {
-          voice = voices.find(v => 
-            v.lang === 'ja-JP' || 
-            v.lang.startsWith('ja') ||
-            v.name.toLowerCase().includes('japanese')
-          );
-        }
-        // Regular handling for other languages
-        else {
-          // Try exact match first
-          voice = voices.find(v => v.lang === targetLang);
-          
-          // If no exact match, try language prefix match
-          if (!voice && targetLang.includes('-')) {
-            const langPrefix = targetLang.split('-')[0];
-            voice = voices.find(v => v.lang.startsWith(langPrefix));
-          }
+        // Find or use cached voice
+        if (!this.preferredVoice) {
+          this.preferredVoice = this.findBestVoice(language);
         }
         
-        if (voice) {
-          utterance.voice = voice;
-          console.log(`Using voice: ${voice.name} (${voice.lang}) for language: ${language}`);
+        if (this.preferredVoice) {
+          utterance.voice = this.preferredVoice;
+          console.log(`Using voice: ${this.preferredVoice.name} (${this.preferredVoice.lang})`);
         } else {
-          console.warn(`No voice found for language ${targetLang}, using default. Available voices:`, voices.map(v => v.lang));
+          console.warn(`No suitable voice found for ${language}, using default`);
         }
 
-        // Set speech parameters
-        utterance.rate = language === 'ar' ? 0.8 : 0.9; // Slower for Arabic
-        utterance.pitch = 1;
+        // Set speech parameters based on language
+        if (language === 'id') {
+          utterance.rate = 0.85; // Slightly slower for Indonesian
+          utterance.pitch = 1.0;
+        } else {
+          utterance.rate = 0.9; // Good pace for English
+          utterance.pitch = 1.0;
+        }
+        
         utterance.volume = 1;
-        utterance.lang = targetLang; // Set language explicitly
+        utterance.lang = this.currentLanguage;
 
         // Add event handlers
         utterance.onstart = () => {
@@ -195,36 +254,11 @@ export class AudioService {
         
         utterance.onerror = (event) => {
           console.error('Speech synthesis error:', event.error, 'for language:', language);
-          
-          // If Arabic fails, try with fallback settings
-          if (language === 'ar' && event.error === 'language-not-supported') {
-            console.log('Retrying Arabic speech with fallback voice...');
-            const fallbackUtterance = new SpeechSynthesisUtterance(text);
-            fallbackUtterance.rate = 0.8;
-            fallbackUtterance.pitch = 1;
-            fallbackUtterance.volume = 1;
-            // Don't set specific voice, let browser choose
-            fallbackUtterance.onend = () => resolve();
-            fallbackUtterance.onerror = () => reject(new Error(`Speech synthesis failed for Arabic: ${event.error}`));
-            
-            this.synthesis.speak(fallbackUtterance);
-          } else {
-            reject(new Error(`Speech synthesis error: ${event.error}`));
-          }
+          reject(new Error(`Speech synthesis error: ${event.error}`));
         };
 
         // Start speaking
         this.synthesis.speak(utterance);
-        
-        // Fallback timeout for Arabic
-        if (language === 'ar') {
-          setTimeout(() => {
-            if (this.synthesis.speaking) {
-              console.log('Arabic speech timeout, resolving anyway...');
-              resolve();
-            }
-          }, Math.max(text.length * 100, 3000)); // Minimum 3 seconds
-        }
       };
 
       // Check if voices are already loaded
@@ -257,21 +291,30 @@ export class AudioService {
     });
   }
 
-  getVoiceLanguage(language) {
-    const voiceMap = {
-      'en': 'en-US',
-      'id': 'id-ID',
-      'zh': 'zh-CN', 
-      'ja': 'ja-JP',
-      'ar': 'ar-SA'
-    };
-    return voiceMap[language] || 'en-US';
+  getAvailableVoices(language) {
+    const voices = this.synthesis.getVoices();
+    const targetLang = language === 'en' ? 'en' : 'id';
+    
+    return voices
+      .filter(voice => voice.lang.startsWith(targetLang))
+      .map(voice => ({
+        name: voice.name,
+        lang: voice.lang,
+        gender: this.detectVoiceGender(voice),
+        isPreferred: this.isHighQualityVoice(voice)
+      }));
   }
 
-  stopSpeaking() {
-    if (this.synthesis) {
-      this.synthesis.cancel();
+  detectVoiceGender(voice) {
+    const voiceName = voice.name.toLowerCase();
+    
+    if (this.isVoiceGenderMatch(voice, 'female')) {
+      return 'female';
+    } else if (this.isVoiceGenderMatch(voice, 'male')) {
+      return 'male';
     }
+    
+    return 'unknown';
   }
 
   isSupported() {
@@ -358,6 +401,57 @@ export class AudioService {
         reject(error);
       }
     });
+  }
+
+  async startListening() {
+    return new Promise((resolve, reject) => {
+      if (!this.recognition) {
+        reject(new Error('Speech recognition not supported'));
+        return;
+      }
+
+      if (this.isListening) {
+        reject(new Error('Already listening'));
+        return;
+      }
+
+      this.isListening = true;
+      
+      this.recognition.onresult = (event) => {
+        const result = event.results[0][0].transcript;
+        this.isListening = false;
+        resolve(result);
+      };
+
+      this.recognition.onerror = (event) => {
+        this.isListening = false;
+        reject(new Error(`Speech recognition error: ${event.error}`));
+      };
+
+      this.recognition.onend = () => {
+        this.isListening = false;
+      };
+
+      try {
+        this.recognition.start();
+      } catch (error) {
+        this.isListening = false;
+        reject(error);
+      }
+    });
+  }
+
+  stopListening() {
+    if (this.recognition && this.isListening) {
+      this.recognition.stop();
+      this.isListening = false;
+    }
+  }
+
+  stopSpeaking() {
+    if (this.synthesis) {
+      this.synthesis.cancel();
+    }
   }
 }
 
