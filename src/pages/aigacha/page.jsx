@@ -123,34 +123,126 @@ function GachaContent() {
     return tomorrow.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
   };
 
+  // Add continuous background particles animation
+  const BackgroundParticles = () => (
+    <div className="fixed inset-0 pointer-events-none z-0">
+      {[...Array(15)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-2 h-2 bg-white/20 rounded-full"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+          }}
+          animate={{
+            y: [-20, -100],
+            opacity: [0, 1, 0],
+            scale: [0.5, 1, 0.5],
+          }}
+          transition={{
+            duration: 3 + Math.random() * 2,
+            repeat: Infinity,
+            delay: Math.random() * 2,
+            ease: "easeInOut"
+          }}
+        />
+      ))}
+    </div>
+  );
+
+  // Add floating sparkles component
+  const FloatingSparkles = () => (
+    <div className="absolute inset-0 pointer-events-none">
+      {[...Array(8)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute text-yellow-300"
+          style={{
+            fontSize: Math.random() * 10 + 15,
+            left: `${10 + Math.random() * 80}%`,
+            top: `${10 + Math.random() * 80}%`,
+          }}
+          animate={{
+            y: [-30, 30, -30],
+            x: [-20, 20, -20],
+            rotate: [0, 360],
+            opacity: [0.3, 1, 0.3],
+            scale: [0.8, 1.2, 0.8],
+          }}
+          transition={{
+            duration: 4 + Math.random() * 2,
+            repeat: Infinity,
+            delay: Math.random() * 2,
+            ease: "easeInOut"
+          }}
+        >
+          ✨
+        </motion.div>
+      ))}
+    </div>
+  );
+
   return (
     <div className={`min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 ${user ? 'p-4' : 'p-4 pt-28'} relative overflow-hidden`}>
       {/* Background Effects */}
       <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900/50 to-slate-800" />
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl" />
+        <motion.div 
+          className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900/50 to-slate-800"
+          animate={{
+            background: [
+              "linear-gradient(to bottom right, #0f172a, #1e3a8a, #1e293b)",
+              "linear-gradient(to bottom right, #1e293b, #3730a3, #0f172a)",
+              "linear-gradient(to bottom right, #0f172a, #1e3a8a, #1e293b)"
+            ]
+          }}
+          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+        />
+        <motion.div 
+          className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.3, 1],
+            x: [-50, 50, -50],
+            y: [-30, 30, -30],
+          }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div 
+          className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"
+          animate={{
+            scale: [1.2, 1, 1.2],
+            x: [30, -30, 30],
+            y: [20, -20, 20],
+          }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        />
       </div>
+
+      {/* Continuous Background Particles */}
+      <BackgroundParticles />
+
+      {/* Floating Sparkles */}
+      <FloatingSparkles />
 
       {/* Particle Effects */}
       <AnimatePresence>
         {showParticles && (
           <div className="fixed inset-0 pointer-events-none z-10">
-            {[...Array(20)].map((_, i) => (
+            {[...Array(30)].map((_, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, scale: 0, x: '50vw', y: '50vh' }}
                 animate={{ 
                   opacity: [0, 1, 0], 
-                  scale: [0, 1, 0.5],
+                  scale: [0, 1.5, 0.5],
                   x: Math.random() * window.innerWidth,
                   y: Math.random() * window.innerHeight,
+                  rotate: [0, 360]
                 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 2, delay: Math.random() * 0.5 }}
+                transition={{ duration: 2.5, delay: Math.random() * 0.8 }}
                 className="absolute text-2xl"
               >
-                ✨
+                {['✨', '⭐', '🌟', '💫'][Math.floor(Math.random() * 4)]}
               </motion.div>
             ))}
           </div>
@@ -163,55 +255,145 @@ function GachaContent() {
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 backdrop-blur-lg border border-blue-200/20 mb-6"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 backdrop-blur-lg border border-blue-200/20 mb-6 relative overflow-hidden"
           >
-            <Sparkles className="w-5 h-5 text-amber-400" />
-            <span className="text-white text-sm font-medium">Daily Lucky Draw</span>
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+              animate={{ x: [-200, 200] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            />
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            >
+              <Sparkles className="w-5 h-5 text-amber-400" />
+            </motion.div>
+            <span className="text-white text-sm font-medium relative z-10">Daily Lucky Draw</span>
           </motion.div>
           
-          <h1 className="text-5xl font-bold text-white mb-4">
+          <motion.h1 
+            className="text-5xl font-bold text-white mb-4"
+            animate={{
+              textShadow: [
+                "0 0 20px rgba(59, 130, 246, 0.5)",
+                "0 0 30px rgba(147, 51, 234, 0.5)",
+                "0 0 20px rgba(59, 130, 246, 0.5)"
+              ]
+            }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          >
             <span className="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
               🎰 AI Career Gacha
             </span>
-          </h1>
-          <p className="text-slate-300 text-lg">Dapatkan hadiah menarik setiap hari!</p>
+          </motion.h1>
+          <motion.p 
+            className="text-slate-300 text-lg"
+            animate={{ opacity: [0.7, 1, 0.7] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          >
+            Dapatkan hadiah menarik setiap hari!
+          </motion.p>
           
           <div className="mt-6 flex items-center justify-center gap-4">
-            <div className="bg-white/10 backdrop-blur-lg rounded-2xl px-6 py-3 border border-blue-200/20">
-              <div className="flex items-center gap-2">
-                <Gift className="w-5 h-5 text-amber-400" />
+            <motion.div 
+              className="bg-white/10 backdrop-blur-lg rounded-2xl px-6 py-3 border border-blue-200/20 relative overflow-hidden"
+              animate={{
+                boxShadow: [
+                  "0 0 20px rgba(59, 130, 246, 0.3)",
+                  "0 0 30px rgba(147, 51, 234, 0.3)",
+                  "0 0 20px rgba(59, 130, 246, 0.3)"
+                ]
+              }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
+                animate={{ x: [-300, 300] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              />
+              <div className="flex items-center gap-2 relative z-10">
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <Gift className="w-5 h-5 text-amber-400" />
+                </motion.div>
                 <span className="text-white font-medium">
                   {canPull ? 'Kesempatan Tersedia!' : `Reset: ${nextResetTime()}`}
                 </span>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
 
         {/* Main Gacha Container */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 mb-8 border border-blue-200/20">
-          <div className="text-center">
+        <motion.div 
+          className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 mb-8 border border-blue-200/20 relative overflow-hidden"
+          animate={{
+            boxShadow: [
+              "0 0 40px rgba(59, 130, 246, 0.1)",
+              "0 0 60px rgba(147, 51, 234, 0.1)",
+              "0 0 40px rgba(59, 130, 246, 0.1)"
+            ]
+          }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
+            animate={{ x: [-500, 500] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+          />
+          <div className="text-center relative z-10">
             {/* Gacha Machine */}
             <motion.div 
               className="relative mx-auto w-80 h-80 mb-8"
               animate={isSpinning ? { 
                 rotate: 360,
                 scale: [1, 1.1, 1]
-              } : { rotate: 0, scale: 1 }}
-              transition={{ 
-                duration: isSpinning ? 1 : 0.5, 
-                repeat: isSpinning ? Infinity : 0, 
-                ease: isSpinning ? "linear" : "easeOut"
+              } : { 
+                rotate: [0, 5, -5, 0], 
+                scale: [1, 1.02, 1],
+                y: [-5, 5, -5]
+              }}
+              transition={isSpinning ? { 
+                duration: 1, 
+                repeat: Infinity, 
+                ease: "linear"
+              } : {
+                rotate: { duration: 3, repeat: Infinity, ease: "easeInOut" },
+                scale: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+                y: { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
               }}
             >
-              <div className="w-full h-full bg-gradient-to-br from-amber-400 via-yellow-400 to-amber-500 rounded-full border-8 border-amber-300 shadow-2xl shadow-amber-500/30 flex items-center justify-center relative overflow-hidden">
+              <motion.div 
+                className="w-full h-full bg-gradient-to-br from-amber-400 via-yellow-400 to-amber-500 rounded-full border-8 border-amber-300 shadow-2xl shadow-amber-500/30 flex items-center justify-center relative overflow-hidden"
+                animate={{
+                  boxShadow: [
+                    "0 0 40px rgba(245, 158, 11, 0.3)",
+                    "0 0 60px rgba(245, 158, 11, 0.5)",
+                    "0 0 40px rgba(245, 158, 11, 0.3)"
+                  ]
+                }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
                 {/* Inner glow effect */}
-                <div className="absolute inset-4 bg-gradient-to-br from-yellow-300/50 to-transparent rounded-full" />
+                <motion.div 
+                  className="absolute inset-4 bg-gradient-to-br from-yellow-300/50 to-transparent rounded-full"
+                  animate={{
+                    opacity: [0.3, 0.7, 0.3],
+                    scale: [1, 1.1, 1]
+                  }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                />
                 
                 {isSpinning ? (
                   <motion.div 
                     className="text-8xl relative z-10"
-                    animate={{ rotate: 360, scale: [1, 1.2, 1] }}
+                    animate={{ 
+                      rotate: 360, 
+                      scale: [1, 1.3, 1],
+                      filter: ["hue-rotate(0deg)", "hue-rotate(360deg)"]
+                    }}
                     transition={{ duration: 0.5, repeat: Infinity }}
                   >
                     ✨
@@ -219,36 +401,47 @@ function GachaContent() {
                 ) : (
                   <motion.div 
                     className="text-8xl relative z-10"
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    transition={{ type: "spring", stiffness: 300 }}
+                    whileHover={{ scale: 1.2, rotate: 15 }}
+                    animate={{
+                      scale: [1, 1.05, 1],
+                      rotate: [0, 2, -2, 0]
+                    }}
+                    transition={{ 
+                      scale: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+                      rotate: { duration: 1.5, repeat: Infinity, ease: "easeInOut" }
+                    }}
                   >
                     🎁
                   </motion.div>
                 )}
-              </div>
+              </motion.div>
               
               {/* Floating sparkles around machine */}
               {!isSpinning && (
                 <>
-                  {[...Array(6)].map((_, i) => (
+                  {[...Array(8)].map((_, i) => (
                     <motion.div
                       key={i}
                       className="absolute text-2xl"
                       style={{
-                        top: `${20 + Math.sin(i * 60 * Math.PI / 180) * 40}%`,
-                        left: `${50 + Math.cos(i * 60 * Math.PI / 180) * 45}%`,
+                        top: `${20 + Math.sin(i * 45 * Math.PI / 180) * 40}%`,
+                        left: `${50 + Math.cos(i * 45 * Math.PI / 180) * 45}%`,
                       }}
                       animate={{
-                        y: [-10, 10, -10],
-                        opacity: [0.5, 1, 0.5],
+                        y: [-15, 15, -15],
+                        x: [-10, 10, -10],
+                        opacity: [0.3, 1, 0.3],
+                        rotate: [0, 360],
+                        scale: [0.8, 1.2, 0.8]
                       }}
                       transition={{
-                        duration: 2,
+                        duration: 3 + Math.random(),
                         repeat: Infinity,
-                        delay: i * 0.3,
+                        delay: i * 0.2,
+                        ease: "easeInOut"
                       }}
                     >
-                      ⭐
+                      {['⭐', '✨', '🌟', '💫'][i % 4]}
                     </motion.div>
                   ))}
                 </>
@@ -264,23 +457,54 @@ function GachaContent() {
                   ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/30'
                   : 'bg-slate-600 text-slate-400 cursor-not-allowed'
               }`}
-              whileHover={canPull && !isSpinning && user ? { scale: 1.05, y: -2 } : {}}
-              whileTap={canPull && !isSpinning && user ? { scale: 0.98 } : {}}
+              whileHover={canPull && !isSpinning && user ? { scale: 1.08, y: -3 } : {}}
+              whileTap={canPull && !isSpinning && user ? { scale: 0.95 } : {}}
+              animate={canPull && !isSpinning && user ? {
+                boxShadow: [
+                  "0 0 20px rgba(59, 130, 246, 0.3)",
+                  "0 0 40px rgba(147, 51, 234, 0.4)",
+                  "0 0 20px rgba(59, 130, 246, 0.3)"
+                ]
+              } : {}}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             >
               {/* Button glow effect */}
               {canPull && !isSpinning && (
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 hover:opacity-20 transition-opacity duration-300 rounded-2xl" />
+                <motion.div 
+                  className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 hover:opacity-20 transition-opacity duration-300 rounded-2xl"
+                  animate={{
+                    background: [
+                      "linear-gradient(to right, rgba(59, 130, 246, 0.2), rgba(147, 51, 234, 0.2))",
+                      "linear-gradient(to right, rgba(147, 51, 234, 0.2), rgba(59, 130, 246, 0.2))",
+                      "linear-gradient(to right, rgba(59, 130, 246, 0.2), rgba(147, 51, 234, 0.2))"
+                    ]
+                  }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                />
               )}
               
               <div className="relative z-10 flex items-center justify-center gap-3">
                 {isSpinning ? (
                   <>
-                    <RotateCcw className="w-6 h-6 animate-spin" />
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    >
+                      <RotateCcw className="w-6 h-6" />
+                    </motion.div>
                     <span>Mengundi...</span>
                   </>
                 ) : canPull && user ? (
                   <>
-                    <Zap className="w-6 h-6" />
+                    <motion.div
+                      animate={{ 
+                        scale: [1, 1.2, 1],
+                        rotate: [0, 15, -15, 0]
+                      }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                      <Zap className="w-6 h-6" />
+                    </motion.div>
                     <span>Gacha Sekarang!</span>
                   </>
                 ) : !user ? (
@@ -292,12 +516,16 @@ function GachaContent() {
             </motion.button>
 
             {!canPull && (
-              <p className="text-slate-400 mt-4 text-sm">
+              <motion.p 
+                className="text-slate-400 mt-4 text-sm"
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
                 Reset otomatis setiap hari pada pukul 00:00
-              </p>
+              </motion.p>
             )}
           </div>
-        </div>
+        </motion.div>
 
         {/* Reward Display Modal */}
         <AnimatePresence>
@@ -310,18 +538,56 @@ function GachaContent() {
               onClick={() => setShowReward(false)}
             >
               <motion.div
-                initial={{ scale: 0.5, opacity: 0, y: 50 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.5, opacity: 0, y: 50 }}
-                className={`bg-white rounded-3xl p-8 max-w-md mx-4 border-4 ${getRarityBorder(currentReward.rarity)} ${getRarityGlow(currentReward.rarity)} shadow-2xl`}
+                initial={{ scale: 0.3, opacity: 0, y: 100, rotateY: 180 }}
+                animate={{ scale: 1, opacity: 1, y: 0, rotateY: 0 }}
+                exit={{ scale: 0.3, opacity: 0, y: 100, rotateY: -180 }}
+                transition={{ 
+                  type: "spring", 
+                  stiffness: 300, 
+                  damping: 30,
+                  rotateY: { duration: 0.8 }
+                }}
+                className={`bg-white rounded-3xl p-8 max-w-md mx-4 border-4 ${getRarityBorder(currentReward.rarity)} ${getRarityGlow(currentReward.rarity)} shadow-2xl relative overflow-hidden`}
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="text-center">
+                {/* Celebration particles inside modal */}
+                <div className="absolute inset-0 pointer-events-none">
+                  {[...Array(10)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute text-yellow-400"
+                      style={{
+                        left: `${Math.random() * 100}%`,
+                        top: `${Math.random() * 100}%`,
+                        fontSize: Math.random() * 8 + 12
+                      }}
+                      animate={{
+                        y: [-20, 20, -20],
+                        x: [-15, 15, -15],
+                        opacity: [0, 1, 0],
+                        rotate: [0, 360]
+                      }}
+                      transition={{
+                        duration: 2 + Math.random(),
+                        repeat: Infinity,
+                        delay: Math.random() * 2,
+                        ease: "easeInOut"
+                      }}
+                    >
+                      ✨
+                    </motion.div>
+                  ))}
+                </div>
+
+                <div className="text-center relative z-10">
                   {/* Celebration effect */}
                   <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: [0, 1.2, 1] }}
-                    transition={{ duration: 0.6, times: [0, 0.7, 1] }}
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{ 
+                      scale: [0, 1.3, 1],
+                      rotate: [0, 360, 0]
+                    }}
+                    transition={{ duration: 1, times: [0, 0.6, 1] }}
                     className="text-8xl mb-4"
                   >
                     {getRewardIcon(currentReward.type)}
@@ -330,7 +596,7 @@ function GachaContent() {
                   <motion.h3 
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
+                    transition={{ delay: 0.5 }}
                     className="text-2xl font-bold mb-2 text-slate-800"
                   >
                     {currentReward.name}
@@ -339,7 +605,7 @@ function GachaContent() {
                   <motion.p 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ delay: 0.4 }}
+                    transition={{ delay: 0.7 }}
                     className="text-slate-600 mb-4 capitalize font-medium"
                   >
                     {currentReward.rarity === 'special' ? 'Bonus Special' : `Rarity: ${currentReward.rarity}`}
@@ -347,36 +613,53 @@ function GachaContent() {
                   
                   {currentReward.type === 'try_again' && (
                     <motion.div 
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.5 }}
-                      className="bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-200 p-4 rounded-xl mb-4"
+                      initial={{ scale: 0, rotateX: 90 }}
+                      animate={{ scale: 1, rotateX: 0 }}
+                      transition={{ delay: 0.8, type: "spring", stiffness: 300 }}
+                      className="bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-200 p-4 rounded-xl mb-4 relative overflow-hidden"
                     >
-                      <p className="text-amber-700 font-bold text-lg">🎉 Luar Biasa!</p>
-                      <p className="text-amber-600 text-sm">Kamu mendapat kesempatan gratis lagi!</p>
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-100/50 to-transparent"
+                        animate={{ x: [-200, 200] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                      />
+                      <p className="text-amber-700 font-bold text-lg relative z-10">🎉 Luar Biasa!</p>
+                      <p className="text-amber-600 text-sm relative z-10">Kamu mendapat kesempatan gratis lagi!</p>
                     </motion.div>
                   )}
                   
                   {currentReward.type === 'voucher' && (
                     <motion.div 
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.5 }}
-                      className="bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-200 p-4 rounded-xl mb-4"
+                      initial={{ scale: 0, rotateX: 90 }}
+                      animate={{ scale: 1, rotateX: 0 }}
+                      transition={{ delay: 0.8, type: "spring", stiffness: 300 }}
+                      className="bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-200 p-4 rounded-xl mb-4 relative overflow-hidden"
                     >
-                      <p className="text-blue-700 font-bold">Kode Diskon:</p>
-                      <p className="text-blue-600 text-lg font-mono font-bold">19JUTALAPANGANKERJA</p>
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-100/50 to-transparent"
+                        animate={{ x: [-200, 200] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                      />
+                      <p className="text-blue-700 font-bold relative z-10">Kode Diskon:</p>
+                      <p className="text-blue-600 text-lg font-mono font-bold relative z-10">19JUTALAPANGANKERJA</p>
                     </motion.div>
                   )}
                   
                   <motion.button
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.6 }}
+                    transition={{ delay: 1 }}
                     onClick={() => setShowReward(false)}
-                    className="mt-4 px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-lg"
+                    className="mt-4 px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-lg relative overflow-hidden"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    Terima Hadiah
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                      animate={{ x: [-200, 200] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                    />
+                    <span className="relative z-10">Terima Hadiah</span>
                   </motion.button>
                 </div>
               </motion.div>
@@ -385,59 +668,161 @@ function GachaContent() {
         </AnimatePresence>
 
         {/* Reward History */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-6 mb-8 border border-blue-200/20">
-          <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-            <Star className="w-6 h-6 text-amber-400" />
+        <motion.div 
+          className="bg-white/10 backdrop-blur-lg rounded-3xl p-6 mb-8 border border-blue-200/20 relative overflow-hidden"
+          animate={{
+            boxShadow: [
+              "0 0 30px rgba(59, 130, 246, 0.1)",
+              "0 0 45px rgba(147, 51, 234, 0.1)",
+              "0 0 30px rgba(59, 130, 246, 0.1)"
+            ]
+          }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/3 to-transparent"
+            animate={{ x: [-600, 600] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+          />
+          <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2 relative z-10">
+            <motion.div
+              animate={{ 
+                rotate: [0, 15, -15, 0],
+                scale: [1, 1.1, 1]
+              }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <Star className="w-6 h-6 text-amber-400" />
+            </motion.div>
             Koleksi Hadiah
           </h2>
           {gachaHistory.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 relative z-10">
               {gachaHistory.slice(0, 10).map((reward, index) => (
                 <motion.div
                   key={reward.id || index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 20, scale: 0.8 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ delay: index * 0.1 }}
-                  className={`bg-white/20 backdrop-blur-sm rounded-2xl p-4 text-center border-2 ${getRarityBorder(reward.rarity)} hover:bg-white/30 transition-all duration-300`}
+                  whileHover={{ 
+                    scale: 1.05, 
+                    y: -5,
+                    boxShadow: "0 10px 25px rgba(0,0,0,0.3)"
+                  }}
+                  className={`bg-white/20 backdrop-blur-sm rounded-2xl p-4 text-center border-2 ${getRarityBorder(reward.rarity)} hover:bg-white/30 transition-all duration-300 relative overflow-hidden cursor-pointer`}
                 >
-                  <div className="text-4xl mb-2">{getRewardIcon(reward.type)}</div>
-                  <p className="text-white text-sm font-medium leading-tight">{reward.name}</p>
-                  <p className="text-slate-300 text-xs capitalize mt-1">{reward.rarity}</p>
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+                    animate={{ x: [-100, 100] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear", delay: index * 0.2 }}
+                  />
+                  <motion.div 
+                    className="text-4xl mb-2 relative z-10"
+                    animate={{
+                      scale: [1, 1.1, 1],
+                      rotate: [0, 5, -5, 0]
+                    }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: index * 0.3 }}
+                  >
+                    {getRewardIcon(reward.type)}
+                  </motion.div>
+                  <p className="text-white text-sm font-medium leading-tight relative z-10">{reward.name}</p>
+                  <p className="text-slate-300 text-xs capitalize mt-1 relative z-10">{reward.rarity}</p>
                 </motion.div>
               ))}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4 opacity-50">🎁</div>
+            <div className="text-center py-12 relative z-10">
+              <motion.div 
+                className="text-6xl mb-4 opacity-50"
+                animate={{
+                  scale: [1, 1.1, 1],
+                  opacity: [0.3, 0.7, 0.3]
+                }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
+                🎁
+              </motion.div>
               <p className="text-slate-300">Belum ada hadiah. Mulai gacha pertamamu!</p>
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* Reward Info */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-6 border border-blue-200/20">
-          <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-            <Gift className="w-5 h-5 text-amber-400" />
+        <motion.div 
+          className="bg-white/10 backdrop-blur-lg rounded-3xl p-6 border border-blue-200/20 relative overflow-hidden"
+          animate={{
+            boxShadow: [
+              "0 0 25px rgba(59, 130, 246, 0.1)",
+              "0 0 35px rgba(147, 51, 234, 0.1)",
+              "0 0 25px rgba(59, 130, 246, 0.1)"
+            ]
+          }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/3 to-transparent"
+            animate={{ x: [-700, 700] }}
+            transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+          />
+          <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2 relative z-10">
+            <motion.div
+              animate={{ 
+                rotate: [0, 360],
+                scale: [1, 1.2, 1]
+              }}
+              transition={{ 
+                rotate: { duration: 4, repeat: Infinity, ease: "linear" },
+                scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+              }}
+            >
+              <Gift className="w-5 h-5 text-amber-400" />
+            </motion.div>
             Hadiah yang Tersedia
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
             {gachaService.getPublicRewards().map((reward, index) => (
               <motion.div 
                 key={index} 
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 flex items-center space-x-4 hover:bg-white/20 transition-all duration-300"
+                whileHover={{ 
+                  scale: 1.02, 
+                  x: 5,
+                  boxShadow: "0 5px 15px rgba(0,0,0,0.2)"
+                }}
+                className="bg-white/10 backdrop-blur-sm rounded-3xl p-4 flex items-center space-x-4 hover:bg-white/20 transition-all duration-300 relative overflow-hidden cursor-pointer"
               >
-                <span className="text-3xl">{getRewardIcon(reward.type)}</span>
-                <div>
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
+                  animate={{ x: [-150, 150] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "linear", delay: index * 0.5 }}
+                />
+                <motion.span 
+                  className="text-3xl relative z-10"
+                  animate={{
+                    scale: [1, 1.1, 1],
+                    rotate: [0, 10, -10, 0]
+                  }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: index * 0.4 }}
+                >
+                  {getRewardIcon(reward.type)}
+                </motion.span>
+                <div className="relative z-10">
                   <p className="text-white font-medium">{reward.name}</p>
-                  <p className="text-slate-300 text-sm capitalize">{reward.rarity}</p>
+                  <motion.p 
+                    className="text-slate-300 text-sm capitalize"
+                    animate={{ opacity: [0.7, 1, 0.7] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: index * 0.3 }}
+                  >
+                    {reward.rarity}
+                  </motion.p>
                 </div>
               </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
