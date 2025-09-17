@@ -6,7 +6,7 @@ const menuItems = [
   { id: 'dashboard', label: 'Dashboard', path: '/dashboard', isPremium: false, icon: TrendingUp },
   { id: 'ainterview', label: 'Interview', path: '/ainterview', isPremium: true, icon: Globe2 },
   { id: 'aitest', label: 'Test', path: '/aitest', isPremium: true, icon: BookOpenCheck },
-  { id: 'aiwork', label: 'Work', path: '/aiwork', isPremium: true, icon: BrainCircuit },
+  // { id: 'aiwork', label: 'Work', path: '/aiwork', isPremium: true, icon: BrainCircuit },
   { id: 'aigacha', label: 'Gacha', path: '/aigacha', isPremium: false, icon: Gift }
 ];
 
