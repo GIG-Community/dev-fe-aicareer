@@ -365,7 +365,7 @@ function GachaContent() {
                       className="bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-200 p-4 rounded-xl mb-4"
                     >
                       <p className="text-blue-700 font-bold">Kode Diskon:</p>
-                      <p className="text-blue-600 text-lg font-mono font-bold">GACHA20</p>
+                      <p className="text-blue-600 text-lg font-mono font-bold">19JUTALAPANGANKERJA</p>
                     </motion.div>
                   )}
                   
