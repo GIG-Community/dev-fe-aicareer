@@ -5,7 +5,7 @@ const menuItems = [
   { id: 'dashboard', label: 'Dashboard', path: '/dashboard', isPremium: false, icon: TrendingUp },
 //   { id: 'aimprove', label: 'AI Improve', path: '/aimprove', isPremium: true, icon: RocketIcon },
   { id: 'ainterview', label: 'AI Interview', path: '/ainterview', isPremium: true, icon: Globe2 },
-//   { id: 'aiproject', label: 'AI Project', path: '/aiproject', isPremium: true, icon: Target },
+  { id: 'aiproject', label: 'AI Project', path: '/aiproject', isPremium: true, icon: Target },
   { id: 'aitest', label: 'AI Test', path: '/aitest', isPremium: true, icon: BookOpenCheck },
   { id: 'aiwork', label: 'AI Work', path: '/aiwork', isPremium: true, icon: BrainCircuit },
   { id: 'aigacha', label: 'AI Gacha', path: '/aigacha', isPremium: false, icon: Gift }

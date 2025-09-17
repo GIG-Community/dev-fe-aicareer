@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { auth, getUserStatus, updateUserStatus } from '../../lib/firebase';
 import { handleSafePaymentFlowWithDiscount, validateDiscountCode, getPriceByDiscountCode } from '../../services/paymentService';
-import { Crown, Star, CheckCircle, Sparkles, RocketIcon, Globe2, Target, BookOpenCheck, BrainCircuit, Users, Lock } from 'lucide-react';
+import { Crown, Star, CheckCircle, Sparkles, RocketIcon, Globe2, Target, BookOpenCheck, BrainCircuit, Users, Lock, ExternalLink, MessageCircle, Phone } from 'lucide-react';
 import Sidebar from '../../components/sidebar';
 import BottomNavigation from '../../components/bottom-navigation';
 
@@ -252,6 +252,63 @@ const Dashboard = () => {
                   <div className="text-slate-500 text-xs sm:text-sm">{stat.label}</div>
                 </div>
               ))}
+            </div>
+
+            {/* Quick Links Section */}
+            <div className="glass-card p-4 sm:p-6 lg:p-8">
+              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-4 sm:mb-6 text-slate-800">Quick Links</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                {/* Feedback Form */}
+                <a
+                  href="https://forms.gle/7dHpUrawwwB5pvbe8"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="glass-card-secondary p-3 sm:p-4 lg:p-6 hover:shadow-lg transition-all group"
+                >
+                  <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                    <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg">
+                      <Star className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                    </div>
+                    <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 text-slate-400 group-hover:text-slate-600 transition-colors" />
+                  </div>
+                  <h4 className="font-semibold text-slate-800 text-sm sm:text-base mb-1 sm:mb-2">Feedback Form</h4>
+                  <p className="text-slate-600 text-xs sm:text-sm">Berikan masukan untuk perbaikan layanan kami</p>
+                </a>
+
+                {/* WhatsApp Community */}
+                <a
+                  href="https://chat.whatsapp.com/JUwNAIwb2JT9oxPWGhQwRA"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="glass-card-secondary p-3 sm:p-4 lg:p-6 hover:shadow-lg transition-all group"
+                >
+                  <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                    <div className="p-2 bg-gradient-to-br from-green-500 to-green-600 rounded-lg">
+                      <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                    </div>
+                    <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 text-slate-400 group-hover:text-slate-600 transition-colors" />
+                  </div>
+                  <h4 className="font-semibold text-slate-800 text-sm sm:text-base mb-1 sm:mb-2">WhatsApp Community</h4>
+                  <p className="text-slate-600 text-xs sm:text-sm">Bergabung dengan komunitas AI Career</p>
+                </a>
+
+                {/* Contact Person */}
+                <a
+                  href="https://wa.me/+6285727627146"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="glass-card-secondary p-3 sm:p-4 lg:p-6 hover:shadow-lg transition-all group"
+                >
+                  <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                    <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
+                      <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                    </div>
+                    <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 text-slate-400 group-hover:text-slate-600 transition-colors" />
+                  </div>
+                  <h4 className="font-semibold text-slate-800 text-sm sm:text-base mb-1 sm:mb-2">Contact Person</h4>
+                  <p className="text-slate-600 text-xs sm:text-sm">Hubungi tim support untuk bantuan</p>
+                </a>
+              </div>
             </div>
 
             {/* Premium Upgrade Card - Mobile optimized */}
