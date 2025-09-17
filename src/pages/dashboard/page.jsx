@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { auth, getUserStatus, updateUserStatus } from '../../lib/firebase';
 import { handleSafePaymentFlowWithDiscount, validateDiscountCode, getPriceByDiscountCode } from '../../services/paymentService';
-import { Crown, Star, CheckCircle, Sparkles, RocketIcon, Globe2, Target, BookOpenCheck, BrainCircuit, Users, Lock, ExternalLink, MessageCircle, Phone } from 'lucide-react';
+import { Crown, Star, CheckCircle, Sparkles, RocketIcon, Globe2, Target, BookOpenCheck, BrainCircuit, Users, Lock, ExternalLink, MessageCircle, Phone, Instagram } from 'lucide-react';
 import Sidebar from '../../components/sidebar';
 import BottomNavigation from '../../components/bottom-navigation';
 
@@ -277,19 +277,19 @@ const Dashboard = () => {
 
                 {/* WhatsApp Community */}
                 <a
-                  href="https://chat.whatsapp.com/JUwNAIwb2JT9oxPWGhQwRA"
+                  href="https://www.instagram.com/aicareer_id"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="glass-card-secondary p-3 sm:p-4 lg:p-6 hover:shadow-lg transition-all group"
                 >
                   <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-                    <div className="p-2 bg-gradient-to-br from-green-500 to-green-600 rounded-lg">
-                      <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                    <div className="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg">
+                      <Instagram className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                     </div>
                     <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 text-slate-400 group-hover:text-slate-600 transition-colors" />
                   </div>
-                  <h4 className="font-semibold text-slate-800 text-sm sm:text-base mb-1 sm:mb-2">WhatsApp Community</h4>
-                  <p className="text-slate-600 text-xs sm:text-sm">Bergabung dengan komunitas AI Career</p>
+                  <h4 className="font-semibold text-slate-800 text-sm sm:text-base mb-1 sm:mb-2">Instagram</h4>
+                  <p className="text-slate-600 text-xs sm:text-sm">Follow Instagram Kami @aicareer_id</p>
                 </a>
 
                 {/* Contact Person */}
