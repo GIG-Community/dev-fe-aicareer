@@ -1,9 +1,9 @@
 const GACHA_REWARDS = {
-  STICKER: { type: 'sticker', name: 'Stiker Eksklusif AiCareer', rarity: 'common', probability: 30 },
-  VOUCHER: { type: 'voucher', name: 'Voucher Diskon', rarity: 'rare', probability: 20},
-  KEYCHAIN: { type: 'keychain', name: 'Gantungan Kunci Limited', rarity: 'rare', probability: 1 },
-  TRY_AGAIN: { type: 'try_again', name: 'Kesempatan Bonus!', rarity: 'special', probability: 30 },
-  PREMIUM: { type: 'premium', name: 'Langganan Premium 1 Bulan gratis', rarity: 'epic', probability: 20 },
+  STICKER: { type: 'sticker', name: 'Stiker Eksklusif AiCareer', rarity: 'Common', probability: 30 },
+  VOUCHER: { type: 'voucher', name: 'Voucher Diskon', rarity: 'Rare', probability: 20},
+  KEYCHAIN: { type: 'keychain', name: 'Gantungan Kunci Limited', rarity: 'Rare', probability: 5 },
+  TRY_AGAIN: { type: 'try_again', name: 'Kesempatan Bonus!', rarity: 'Special', probability: 10 },
+  PREMIUM: { type: 'premium', name: 'Langganan Premium 1 Bulan gratis', rarity: 'Legendary', probability: 20 },
 };
 
 class GachaService {
