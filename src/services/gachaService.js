@@ -1,5 +1,5 @@
 const GACHA_REWARDS = {
-  STICKER: { type: 'sticker', name: 'Stiker Eksklusif AiCareer', rarity: 'Common', probability: 30 },
+  STICKER: { type: 'snack and sticker', name: 'Stiker Eksklusif AiCareer + Snack', rarity: 'Common', probability: 30 },
   VOUCHER: { type: 'voucher', name: 'Voucher Diskon', rarity: 'Rare', probability: 20},
   KEYCHAIN: { type: 'keychain', name: 'Gantungan Kunci Limited', rarity: 'Rare', probability: 5 },
   TRY_AGAIN: { type: 'try_again', name: 'Kesempatan Bonus!', rarity: 'Special', probability: 10 },
