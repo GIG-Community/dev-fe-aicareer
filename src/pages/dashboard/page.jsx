@@ -241,9 +241,9 @@ const Dashboard = () => {
             {/* Stats Cards - Mobile responsive grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {[
-                { number: userStatus?.isPremium ? "Unlimited" : "5", label: "Tests Available", icon: BookOpenCheck },
-                { number: userStatus?.isPremium ? "Unlimited" : "3", label: "Interviews/Month", icon: Globe2 },
-                { number: userStatus?.isPremium ? "Advanced" : "Basic", label: "AI Analysis", icon: BrainCircuit },
+                { number: userStatus?.isPremium ? "Unlimited" : "0", label: "Tests Available", icon: BookOpenCheck },
+                { number: userStatus?.isPremium ? "Unlimited" : "0", label: "Interviews/Month", icon: Globe2 },
+                { number: userStatus?.isPremium ? "Advanced" : "0", label: "AI Analysis", icon: BrainCircuit },
                 { number: userStatus?.isPremium ? "24/7" : "Limited", label: "Support", icon: Users }
               ].map((stat, index) => (
                 <div key={index} className="glass-card-secondary p-3 sm:p-4 lg:p-6 text-center">
